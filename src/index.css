@@ -1,3 +1,12 @@
+html, body {
+    width: 100%;
+    height: 100%;
+}
 #gosling-component-wrapper {
-    display: absolute;
+    position: absolute;
+    border: 1px solid red;
+}
+#metavis-component-wrapper {
+    position: absolute;
+    border: 1px solid red;
 }

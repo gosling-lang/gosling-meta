@@ -1,34 +1,41 @@
 {
-  "name": "gosling-meta",
-  "version": "0.0.1",
-  "description": "Use Gosling with linked metadata visualization",
-  "main": "index.js",
-  "repository": "git@github.com:gosling-lang/gosling-meta.git",
-  "license": "MIT",
-  "scripts": {
-    "start": "vite",
-    "build": "vite build",
-    "serve": "vite preview",
-    "predeploy": "yarn build",
-    "format": "eslint src/ --fix",
-    "deploy": "touch dist/.nojekyll; cp -R docs dist/docs; gh-pages -d dist -t --git git"
-  },
-  "dependencies": {
-    "gosling.js": "^0.9.30",
-    "higlass": "^1.12.4",
-    "pixi.js": "^6.3.0",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0"
-  },
-  "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "^5.59.6",
-    "@typescript-eslint/parser": "^5.59.6",
-    "@vitejs/plugin-react": "^4.0.0",
-    "eslint": "^8.40.0",
-    "eslint-plugin-react": "^7.32.2",
-    "gh-pages": "^5.0.0",
-    "typescript": "^5.0.4",
-    "vite": "^4.3.7",
-    "vitest": "^0.31.1"
-  }
+    "name": "gosling-meta",
+    "version": "0.0.1",
+    "description": "Use Gosling with linked metadata visualization",
+    "main": "index.js",
+    "repository": "git@github.com:gosling-lang/gosling-meta.git",
+    "license": "MIT",
+    "scripts": {
+        "start": "vite",
+        "build": "vite build",
+        "serve": "vite preview",
+        "predeploy": "yarn build",
+        "format": "eslint src/ --fix && prettier --write *",
+        "deploy": "touch dist/.nojekyll; cp -R docs dist/docs; gh-pages -d dist -t --git git"
+    },
+    "dependencies": {
+        "gosling.js": "^0.9.30",
+        "higlass": "^1.12.4",
+        "pixi.js": "^6.3.0",
+        "react": "^18.2.0",
+        "react-dom": "^18.2.0"
+    },
+    "devDependencies": {
+        "@typescript-eslint/eslint-plugin": "^5.43.0",
+        "@typescript-eslint/parser": "^5.59.6",
+        "@vitejs/plugin-react": "^4.0.0",
+        "eslint": "^8.0.1",
+        "eslint-config-prettier": "^8.8.0",
+        "eslint-config-standard-with-typescript": "^34.0.1",
+        "eslint-plugin-import": "^2.25.2",
+        "eslint-plugin-n": "^15.0.0",
+        "eslint-plugin-prettier": "^4.2.1",
+        "eslint-plugin-promise": "^6.0.0",
+        "eslint-plugin-react": "^7.32.2",
+        "gh-pages": "^5.0.0",
+        "prettier": "^2.8.8",
+        "typescript": "*",
+        "vite": "^4.3.7",
+        "vitest": "^0.31.1"
+    }
 }
