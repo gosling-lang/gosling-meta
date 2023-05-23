@@ -257,5 +257,14 @@ const spec = {
 };
 
 export default function App() {
-    return <GoslingMetaComponent goslingSpec={spec} />;
+    // Example of using Gosling Meta Component
+    return (
+        <GoslingMetaComponent
+            goslingSpec={spec}
+            metaSpec={{
+                type: 'table'
+                // ... other props
+            }}
+        />
+    );
 }
