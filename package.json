@@ -4,6 +4,7 @@
     "description": "Use Gosling with linked metadata visualization",
     "main": "index.js",
     "repository": "git@github.com:gosling-lang/gosling-meta.git",
+    "homepage": "https://gosling-lang.github.io/gosling-meta/",
     "license": "MIT",
     "scripts": {
         "start": "vite",

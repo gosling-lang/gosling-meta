@@ -23,19 +23,21 @@ interface GoslingMetaComponentProps {
 export default function GoslingMetaComponent(props: GoslingMetaComponentProps) {
     const { goslingSpec, metaSpec } = props;
 
-    // ...
     const gosRef = useRef<GoslingRef>(null);
-    // ... calculate the position of gosling component and metadata vis
+
+    // ... need to calculate the position of gosling component and metadata vis
     const metaVisWidth = 600;
     const gosPos = { left: 100 + metaVisWidth, top: 100 };
     const metaPos = { left: 100, top: 100 };
-    // ...
+
+    // code copied from the `gosling-react-example`
     const detailID = 'detailedView';
     const circularRadius = 200;
     const centerRadius = 0.5;
     const linearHeight = 120;
     const linearSize = linearHeight / 6;
     const [data, setData] = useState<Datum[]>([]);
+
     useEffect(() => {
         if (gosRef.current == null) return;
         gosRef.current.api.subscribe('rawData', (type, rawdata) => {
