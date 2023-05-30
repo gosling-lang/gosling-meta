@@ -278,14 +278,14 @@ const metaSpec = {
         }
     ],
     width: 600,
+    genomicColumns: ['Gene start', 'Gene end'],
     columns: ['Prediction Method', 'Gene name', 'Accnum', 'Product']
 }
 
 export default function App() {
-    // Example of using Gosling Meta Component
     return (
         <GoslingMetaComponent
-            dataTracks={[detailID]}
+            linkedTrack={detailID}
             goslingSpec={goslingSpec}
             metaSpec={metaSpec}
             alignmentType={{type: "loose"}}
