@@ -285,10 +285,9 @@ const metaSpec = {
 export default function App() {
     return (
         <GoslingMetaComponent
-            linkedTrack={detailID}
             goslingSpec={goslingSpec}
             metaSpec={metaSpec}
-            alignmentType={{type: "loose"}}
+            alignmentType={{type: "loose", trackID: detailID}}
         />
     );
 }

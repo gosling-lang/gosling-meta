@@ -1,6 +1,5 @@
 import React, {useRef, useState, useEffect} from 'react';
 import {GoslingComponent, type GoslingRef, type GoslingSpec} from 'gosling.js';
-import {type Datum} from 'gosling.js/dist/src/core/gosling.schema';
 import MetaTable, {MetaTableSpec} from './MetaTable';
 import 'higlass/dist/hglib.css';
 import './index.css';
@@ -12,15 +11,13 @@ export type MetaSpec = {
 
 interface AlignmentType {
     type: 'loose' | 'tight';
-    trackID?: string;
+    trackID: string;
 }
 
 
 interface GoslingMetaComponentProps {
     goslingSpec: GoslingSpec;
     metaSpec: MetaSpec;
-    // track that is linked in metaSpec and goslingSpec
-    linkedTrack: string;
     alignmentType: AlignmentType;
 }
 
@@ -30,7 +27,7 @@ interface GoslingMetaComponentProps {
  * @returns
  */
 export default function GoslingMetaComponent(props: GoslingMetaComponentProps) {
-    const {goslingSpec, metaSpec, linkedTrack, alignmentType} = props;
+    const {goslingSpec, metaSpec, alignmentType} = props;
 
     const gosRef = useRef<GoslingRef>(null);
     const containerRef = useRef<HTMLInputElement>(null);
@@ -63,7 +60,7 @@ export default function GoslingMetaComponent(props: GoslingMetaComponentProps) {
                 {metaSpec.type === 'table' ?
                     <MetaTable dataTransform={metaSpec.dataTransform}
                                gosRef={gosRef}
-                               linkedTrack={linkedTrack}
+                               linkedTrack={alignmentType.trackID}
                                genomicColumns={metaSpec.genomicColumns}
                                columns={metaSpec.columns}
                                width={metaSpec.width}

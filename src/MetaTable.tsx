@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {mergeData, renameColumns} from "./table-data-transform";
 import {DataDeep, Datum} from "gosling.js/dist/src/core/gosling.schema";
 import {GoslingRef} from "gosling.js";
@@ -45,27 +45,33 @@ export default function MetaTable(props: MetaTableProps) {
     const { dataTransform, gosRef, linkedTrack, genomicColumns, columns, width, height} = props;
     const [dataInRange, setDataInRange] = useState<Datum[]>([]);
     const [columnNames, setColumnNames]=useState<string[]>([])
+    const transformData = useCallback((data)=>{
+         let dataTransformed: Datum[] = Array.from(data);
+                dataTransform.forEach(transform => {
+                    switch (transform.type) {
+                        case("merge"):
+                            dataTransformed = mergeData(transform, data);
+                            break;
+                        case("rename"):
+                            dataTransformed = renameColumns(transform, data);
+                            break;
+                    }
+                })
+        return(dataTransformed);
+    },[dataTransform]);
     useEffect(() => {
         if (gosRef.current == null) return;
         // TODO Better: Use a brush event in gosling.js (related issue: #910)
         gosRef.current.api.subscribe('rawData', (type, rawdata) => {
-            if(rawdata.data.length > 0) {
-                let dataTransformed: Datum[] = Array.from(rawdata.data);
-                dataTransform.forEach(transform => {
-                    switch (transform.type) {
-                        case("merge"):
-                            dataTransformed = mergeData(transform, rawdata.data);
-                            break;
-                        case("rename"):
-                            dataTransformed = renameColumns(transform, rawdata.data);
-                            break;
-                    }
-                })
-                const tableKeys = columns && columns.length > 0 ? columns : dataTransformed.length > 0 ? Object.keys(dataTransformed[0]) : [];
+            if(rawdata.data.length > 0 && rawdata.id === linkedTrack) {
+                // TODO remove next two lines when rawdata event is adapted (related issues: #909, #894)
+                // gets the column names after applying transformations
+                const transformedColumns=Object.keys(transformData([rawdata.data[0]])[0])
+                const tableKeys = columns && columns.length > 0 ? columns : transformedColumns;
                 setColumnNames(tableKeys);
                 const range = gosRef.current?.hgApi.api.getLocation(linkedTrack).xDomain;
                 // TODO remove column check when rawdata event is adapted (related issues: #909, #894)
-                if (linkedTrack === rawdata.id && tableKeys.every((col) => Object.keys(rawdata.data[0]).includes(col))) {
+                if (tableKeys.every((col) => transformedColumns.includes(col))) {
                     let dataInRange: Datum[] = [];
                     // features have start and end
                     if (genomicColumns.length === 2) {
@@ -86,7 +92,7 @@ export default function MetaTable(props: MetaTableProps) {
                     const uniqueInRange = dataInRange.filter(
                         (v, i, a) => a.findIndex(v2 => v2['Gene name'] === v['Gene name']) === i
                     );
-                    setDataInRange(uniqueInRange);
+                    setDataInRange(transformData(uniqueInRange));
                 }
             }
         });
