@@ -34,7 +34,6 @@ export interface MergeColumnsTransform {
     newField: string;
 }
 
-
 export interface RenameColumnsTransform {
     type: 'rename',
     fields: string[];

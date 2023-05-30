@@ -14,7 +14,8 @@
         "strictNullChecks": true,
         "isolatedModules": false,
         "noEmit": true,
-        "jsx": "react"
+        "jsx": "react",
+        "types": ["vitest/globals"]
     },
     "include": ["./src", "./demo"],
     "exclude": ["node_modules"]

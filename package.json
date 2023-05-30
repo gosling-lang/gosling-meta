@@ -10,6 +10,7 @@
         "start": "vite",
         "build": "vite build",
         "serve": "vite preview",
+        "test": "vitest",
         "predeploy": "yarn build",
         "format": "eslint src/ --fix && prettier --write *",
         "deploy": "touch dist/.nojekyll; gh-pages -d dist -t --git git"
@@ -39,6 +40,6 @@
         "prettier": "^2.8.8",
         "typescript": "*",
         "vite": "^4.3.7",
-        "vitest": "^0.31.1"
+        "vitest": "^0.31.2"
     }
 }
