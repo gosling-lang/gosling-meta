@@ -9,16 +9,16 @@ export type MetaSpec = {
     height?: number;
 } & MetaTableSpec
 
-interface AlignmentType {
-    type: 'loose' | 'tight';
-    trackID: string;
+interface ConnectionType {
+    type: 'weak' | 'strong';
+    trackId: string;
 }
 
 
 interface GoslingMetaComponentProps {
     goslingSpec: GoslingSpec;
     metaSpec: MetaSpec;
-    alignmentType: AlignmentType;
+    connectionType: ConnectionType;
 }
 
 /**
@@ -27,28 +27,28 @@ interface GoslingMetaComponentProps {
  * @returns
  */
 export default function GoslingMetaComponent(props: GoslingMetaComponentProps) {
-    const {goslingSpec, metaSpec, alignmentType} = props;
+    const {goslingSpec, metaSpec, connectionType} = props;
 
     const gosRef = useRef<GoslingRef>(null);
     const containerRef = useRef<HTMLInputElement>(null);
 
     let gosPos, metaPos;
-    if (alignmentType.type == 'loose') {
+    if (connectionType.type == 'weak') {
         gosPos = {left: 100 + metaSpec.width, top: 100};
         metaPos = {left: 100, top: 100};
     } else {
-        // TODO: get position of track that is used for alignment when alignmentType=="tight" (Related to issue #909)
+        // TODO: get position of track that is used for alignment when connectionType=="strong" (Related to issue #909)
     }
 
-    const [metaHeight, setMetaHeight] = useState(metaSpec.height !== undefined ? metaSpec.height : 100);
+    const [metaHeight, setMetaHeight] = useState(metaSpec.height ?? 100);
     useEffect(() => {
         if (containerRef.current == null) return;
         // if the user does not provide a height and the alignmentType is "loose" use the full height of the gosling component
-        if (metaSpec.height === undefined && alignmentType.type === "loose") {
+        if (!metaSpec.height && connectionType.type === "weak") {
             setMetaHeight(containerRef.current.clientHeight)
         }
-        // TODO: get height of spec when alignmentType=="tight" (Related to issue #909)
-    }, [metaSpec.height, alignmentType.type, containerRef.current])
+        // TODO: get height of spec when connectionType=="strong" (Related to issue #909)
+    }, [metaSpec.height, connectionType.type, containerRef.current])
 
 
     return (
@@ -60,7 +60,7 @@ export default function GoslingMetaComponent(props: GoslingMetaComponentProps) {
                 {metaSpec.type === 'table' ?
                     <MetaTable dataTransform={metaSpec.dataTransform}
                                gosRef={gosRef}
-                               linkedTrack={alignmentType.trackID}
+                               linkedTrack={connectionType.trackId}
                                genomicColumns={metaSpec.genomicColumns}
                                columns={metaSpec.columns}
                                width={metaSpec.width}

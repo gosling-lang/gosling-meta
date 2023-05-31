@@ -9,16 +9,13 @@ export type MetaTableSpec = {
     data?: DataDeep;
     dataTransform: tableDataTransform[];
     genomicColumns: [string,string] | [string];
-    columns: string[];
+    columns?: string[];
 }
 
-interface MetaTableProps {
+interface MetaTableProps extends Omit<MetaTableSpec, 'type' | 'data'> {
     data?: Datum[];
-    dataTransform: tableDataTransform[];
     gosRef: React.RefObject<GoslingRef>;
     linkedTrack: string;
-    genomicColumns: [string,string] | [string];
-    columns?: string[];
     width: number | string;
     height: number | string;
 }

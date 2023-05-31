@@ -287,7 +287,7 @@ export default function App() {
         <GoslingMetaComponent
             goslingSpec={goslingSpec}
             metaSpec={metaSpec}
-            alignmentType={{type: "loose", trackID: detailID}}
+            connectionType={{type: "weak", trackId: detailID}}
         />
     );
 }
