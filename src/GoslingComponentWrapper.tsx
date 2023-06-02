@@ -11,7 +11,7 @@ interface GoslingComponentWrapperProps {
 
 
 /**
- * Main component that renders gosling visualization and metadata visualization.
+ * Wrapper for gosling component
  * @param props
  * @returns
  */

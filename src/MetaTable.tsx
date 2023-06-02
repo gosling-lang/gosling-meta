@@ -35,7 +35,11 @@ export interface RenameColumnsTransform {
     newFields: string[];
 }
 
-
+/**
+ * Metadata table component
+ * @param props
+ * @constructor
+ */
 export default function MetaTable(props: MetaTableProps) {
     const {data, range, dataTransform, genomicColumns, columns, width, height} = props;
     const transformData = useCallback((data) => {
