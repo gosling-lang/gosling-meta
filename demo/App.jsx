@@ -2,10 +2,12 @@ import * as React from 'react';
 import { Routes, Route, Link } from 'react-router-dom';
 import IslandViewer from './IslandViewer';
 import 'higlass/dist/hglib.css';
+import GeneSpy from "./GeneSpy";
 
 // The full list of examples
 const examples = {
 	IslandViewer: <IslandViewer/>,
+	GeneSpy: <GeneSpy/>
 }
 
 function App() {
