@@ -1,8 +1,10 @@
-import React, {useRef, useState, useEffect} from 'react';
-import {GoslingComponent, type GoslingRef, type GoslingSpec} from 'gosling.js';
+import React, {useRef, useState, useEffect, useCallback} from 'react';
+import {type GoslingSpec} from 'gosling.js';
 import MetaTable, {MetaTableSpec} from './MetaTable';
 import 'higlass/dist/hglib.css';
 import './index.css';
+import GoslingComponentWrapper from "./GoslingComponentWrapper";
+import {Datum} from "gosling.js/dist/src/core/gosling.schema";
 
 export type MetaSpec = {
     width: number;
@@ -29,7 +31,6 @@ interface GoslingMetaComponentProps {
 export default function GoslingMetaComponent(props: GoslingMetaComponentProps) {
     const {goslingSpec, metaSpec, connectionType} = props;
 
-    const gosRef = useRef<GoslingRef>(null);
     const containerRef = useRef<HTMLInputElement>(null);
 
     let gosPos, metaPos;
@@ -41,6 +42,14 @@ export default function GoslingMetaComponent(props: GoslingMetaComponentProps) {
     }
 
     const [metaHeight, setMetaHeight] = useState(metaSpec.height ?? 100);
+    // range of data relevant for the meta visualization
+    const [range, setRange] = useState<[number, number]>([0, 0])
+    // data relevant for the meta visualization
+    const [data, setData] = useState<Datum[]>([])
+    const handleRangeUpdate = useCallback((range, data) => {
+        setRange(range);
+        setData(data);
+    }, [])
     useEffect(() => {
         if (containerRef.current == null) return;
         // if the user does not provide a height and the alignmentType is "loose" use the full height of the gosling component
@@ -50,21 +59,29 @@ export default function GoslingMetaComponent(props: GoslingMetaComponentProps) {
         // TODO: get height of spec when connectionType=="strong" (Related to issue #909)
     }, [metaSpec.height, connectionType.type, containerRef.current])
 
-
+    let goslingView: React.ReactElement | null = null;
+    let metaView: React.ReactElement | null = null;
+    switch (metaSpec.type) {
+        case "table":
+            // dataId will be removed when rawData event only returns the data of the track, or when we have a proper brush event
+            goslingView = <GoslingComponentWrapper spec={goslingSpec} trackId={connectionType.trackId}
+                                                   onRangeUpdate={handleRangeUpdate} dataId={"Accnum"}/>
+            metaView = <MetaTable dataTransform={metaSpec.dataTransform}
+                                  range={range}
+                                  data={data}
+                                  genomicColumns={metaSpec.genomicColumns}
+                                  columns={metaSpec.columns}
+                                  width={metaSpec.width}
+                                  height={metaHeight}/>
+            break;
+    }
     return (
         <div>
             <div id="gosling-component-wrapper" style={{...gosPos}} ref={containerRef}>
-                <GoslingComponent ref={gosRef} spec={goslingSpec} padding={0}/>
+                {goslingView}
             </div>
             <div id="metavis-component-wrapper" style={{...metaPos}}>
-                {metaSpec.type === 'table' ?
-                    <MetaTable dataTransform={metaSpec.dataTransform}
-                               gosRef={gosRef}
-                               linkedTrack={connectionType.trackId}
-                               genomicColumns={metaSpec.genomicColumns}
-                               columns={metaSpec.columns}
-                               width={metaSpec.width}
-                               height={metaHeight}/> : null}
+                {metaView}
             </div>
         </div>
     );
