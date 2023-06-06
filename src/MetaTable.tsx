@@ -78,10 +78,10 @@ export default function MetaTable(props: MetaTableProps) {
             (v, i, a) => a.findIndex(v2 => JSON.stringify(v2) === JSON.stringify(v)) === i
         );
         return (transformData(uniqueInRange));
-    }, [data, range])
+    }, [genomicColumns, data, range])
     const columnNames = useMemo(() => {
         return columns ?? (dataInRange.length > 0 ? Object.keys(dataInRange[0]) : []);
-    }, [columns])
+    }, [columns,dataInRange])
     return (
         <>
             {dataInRange.length === 0 ? null :

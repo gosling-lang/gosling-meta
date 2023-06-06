@@ -1,9 +1,11 @@
-import React, {useRef, useState, useEffect} from 'react';
-import {GoslingComponent, type GoslingRef, type GoslingSpec} from 'gosling.js';
+import React, {useState, useCallback, useRef, useMemo} from 'react';
+import {type GoslingSpec} from 'gosling.js';
 import MetaTable, {MetaTableSpec} from './MetaTable';
 import 'higlass/dist/hglib.css';
 import './index.css';
 import PhyloTree, {PhyloTreeSpec} from "./PhyloTree";
+import GoslingComponentWrapper from "./GoslingComponentWrapper";
+import {Datum} from "gosling.js/dist/src/core/gosling.schema";
 
 export type MetaSpec = {
     width: number;
@@ -30,14 +32,10 @@ interface GoslingMetaComponentProps {
 export default function GoslingMetaComponent(props: GoslingMetaComponentProps) {
     const {goslingSpec, metaSpec, connectionType} = props;
 
-    const gosRef = useRef<GoslingRef>(null);
-    const containerRef = useRef<HTMLInputElement>(null);
-
     const [renderGos, setRenderGos] = useState(metaSpec.type !== "tree")
-    const [metaPos, setMetaPos] = useState({left: 100, top: 100})
-    const [gosPos, setGosPos] = useState({left: 100 + metaSpec.width, top: 100})
 
-    const [metaHeight, setMetaHeight] = useState(metaSpec.height ?? 100);
+    const [gosHeight, setGosHeight] = useState(0);
+    const [trackShape, setTrackShape] = useState({x: 0, y: 0, height: 0, width: 0});
     // range of data relevant for the meta visualization
     const [range, setRange] = useState<[number, number]>([0, 0])
     // data relevant for the meta visualization
@@ -46,31 +44,34 @@ export default function GoslingMetaComponent(props: GoslingMetaComponentProps) {
         setRange(range);
         setData(data);
     }, [])
-    useEffect(() => {
-        if (!gosRef.current || !renderGos || connectionType.type === "weak") return;
-        if(connectionType.type==="strong") {
-            const tracks = gosRef.current.api.getTracks();
-            const referenceTrack = tracks[tracks.map(d => d.id)
-                .indexOf(connectionType.trackId)];
-            setMetaPos({top: 100 + referenceTrack.shape.y, left: 100})
-            setMetaHeight(referenceTrack.shape.height);
-        }else if(!metaSpec.height){
-            setMetaHeight(gosRef.current.getBoundingClientRect().height)
+    const metaHeight = useMemo(() => {
+        let height = 0
+        if (connectionType.type === "strong") {
+            height = trackShape.height
+        } else if (!metaSpec.height) {
+            height = gosHeight;
         }
-        // TODO: get height of spec when connectionType=="strong" (Related to issue #909)
-    }, [metaSpec.height, connectionType.type, containerRef.current])
-    const metaContainerRef = useCallback((node) => {
-        if (node!=null) {
-            setGosPos({top: 100, left: 100 + node.getBoundingClientRect().width})
+        return (height);
+    }, [gosHeight, trackShape, connectionType.type]);
+    const gosPos = useMemo(() => {
+        let pos = {left: 100 + metaSpec.width, top: 100}
+        return (pos);
+    }, [trackShape, connectionType.type])
+    const metaPos = useMemo(() => {
+        let pos = {left: 100, top: 100}
+        if (connectionType.type === "strong") {
+            pos = {left: 100, top: 100 + trackShape.y}
         }
-    }, [])
+        return (pos)
+    }, [trackShape])
     let goslingView: React.ReactElement | null = null;
     let metaView: React.ReactElement | null = null;
     switch (metaSpec.type) {
         case "table":
             // dataId will be removed when rawData event only returns the data of the track, or when we have a proper brush event
             goslingView = <GoslingComponentWrapper spec={goslingSpec} trackId={connectionType.trackId}
-                                                   onRangeUpdate={handleRangeUpdate} dataId={"Accnum"}/>
+                                                   onRangeUpdate={handleRangeUpdate} dataId={"Accnum"}
+                                                   setGosHeight={setGosHeight} setTrackShape={setTrackShape}/>
             metaView = <MetaTable dataTransform={metaSpec.dataTransform}
                                   range={range}
                                   data={data}
@@ -79,10 +80,17 @@ export default function GoslingMetaComponent(props: GoslingMetaComponentProps) {
                                   width={metaSpec.width}
                                   height={metaHeight}/>
             break;
+        case "tree":
+            goslingView =
+                <GoslingComponentWrapper spec={goslingSpec} trackId={connectionType.trackId} setGosHeight={setGosHeight}
+                                         setTrackShape={setTrackShape}/>
+            metaView = <PhyloTree renderGos={setRenderGos} gosSpec={goslingSpec} linkedTrack={connectionType.trackId}
+                                  width={metaSpec.width} height={metaHeight}/>
+            break;
     }
     return (
         <div>
-            <div id="gosling-component-wrapper" style={{...gosPos}} ref={containerRef}>
+            <div id="gosling-component-wrapper" style={{...gosPos}}>
                 {goslingView}
             </div>
             <div id="metavis-component-wrapper" style={{...metaPos}}>
