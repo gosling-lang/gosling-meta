@@ -38,6 +38,7 @@ const goslingSpec = {
                         separator: '\t',
                         genomicFields: ['Position']
                     },
+                    id: "1",
                     y: {field: 'GCcontent', type: 'quantitative', range: [-250, 0], axis: 'none'},
                     mark: 'line',
                     size: {value: 0.5},
@@ -47,13 +48,13 @@ const goslingSpec = {
                     }
                 },
                 {
-                    experimental: {mouseEvents: true},
                     style: {outlineWidth: 1, outline: 'black'},
                     data: {
                         url: 'https://s3.amazonaws.com/gosling-lang.org/data/IslandViewer/NC_004631.1_annotations.csv',
                         type: 'csv',
                         genomicFields: ['Gene start']
                     },
+                    id: "2",
                     dataTransform: [
                         {
                             type: 'displace',
@@ -78,6 +79,7 @@ const goslingSpec = {
                     }
                 },
                 {
+                    id:"3",
                     ...islandData,
                     row: {
                         field: 'Method',
@@ -142,6 +144,7 @@ const goslingSpec = {
                         chromosomeField: 'Accession',
                         genomicFields: ['Gene start', 'Gene end']
                     },
+                    id: "d2",
                     x: {field: 'Gene start', type: 'genomic'},
                     xe: {field: 'Gene end', type: 'genomic'},
                     y: {value: 4.5 * linearSize},
@@ -152,56 +155,9 @@ const goslingSpec = {
                     tooltip: [{field: 'Gene name', type: 'nominal', alt: 'Name'}]
                 },
                 {
-                    data: {
-                        url: 'https://s3.amazonaws.com/gosling-lang.org/data/IslandViewer/NC_004631.1_genes.csv',
-                        type: 'csv',
-                        chromosomeField: 'Accession',
-                        genomicFields: ['Gene start', 'Gene end']
-                    },
-                    x: {field: 'Gene start', type: 'genomic'},
-                    xe: {field: 'Gene end', type: 'genomic'},
-                    y: {value: 5.5 * linearSize},
-                    mark: 'text',
-                    text: {field: 'Gene name', type: 'nominal'},
-                    dataTransform: [{type: 'filter', field: 'Strand', oneOf: ['1']}],
-                    color: {value: '#ffffff'},
-                    visibility: [
-                        {
-                            operation: 'less-than',
-                            measure: 'width',
-                            threshold: '|xe-x|',
-                            transitionPadding: 10,
-                            target: 'mark'
-                        }
-                    ]
-                },
-                {
-                    data: {
-                        url: 'https://s3.amazonaws.com/gosling-lang.org/data/IslandViewer/NC_004631.1_genes.csv',
-                        type: 'csv',
-                        chromosomeField: 'Accession',
-                        genomicFields: ['Gene start', 'Gene end']
-                    },
-                    x: {field: 'Gene start', type: 'genomic'},
-                    xe: {field: 'Gene end', type: 'genomic'},
-                    y: {value: 4.5 * linearSize},
-                    mark: 'text',
-                    text: {field: 'Gene name', type: 'nominal'},
-                    dataTransform: [{type: 'filter', field: 'Strand', oneOf: ['-1']}],
-                    color: {value: '#ffffff'},
-                    visibility: [
-                        {
-                            operation: 'less-than',
-                            measure: 'width',
-                            threshold: '|xe-x|',
-                            transitionPadding: 10,
-                            target: 'mark'
-                        }
-                    ]
-                },
-                {
                     ...islandData,
                     mark: 'rect',
+                    id:"d3",
                     dataTransform: [{type: 'filter', field: 'Method', oneOf: ['IslandPath-DIMOB']}],
                     y: {value: 0.5 * linearSize},
                     size: {value: linearSize},
@@ -210,6 +166,7 @@ const goslingSpec = {
                 {
                     ...islandData,
                     mark: 'rect',
+                    id: "d4",
                     dataTransform: [{type: 'filter', field: 'Method', oneOf: ['SIGI-HMM']}],
                     y: {value: 1.5 * linearSize},
                     size: {value: linearSize},
@@ -218,6 +175,7 @@ const goslingSpec = {
                 {
                     ...islandData,
                     mark: 'rect',
+                    id: "d5",
                     dataTransform: [{type: 'filter', field: 'Method', oneOf: ['IslandPick']}],
                     y: {value: 2.5 * linearSize},
                     size: {value: linearSize},
@@ -226,6 +184,7 @@ const goslingSpec = {
                 {
                     ...islandData,
                     mark: 'rect',
+                    id:"d6",
                     dataTransform: [{type: 'filter', field: 'Method', oneOf: ['Islander']}],
                     y: {value: 3.5 * linearSize},
                     size: {value: linearSize},
@@ -249,6 +208,7 @@ const goslingSpec = {
                             newField: 'row'
                         }
                     ],
+                    id:"d7",
                     row: {field: 'row', type: 'nominal'},
                     mark: 'point',
                     x: {field: 'Gene start', type: 'genomic'},

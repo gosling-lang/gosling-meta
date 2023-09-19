@@ -1,11 +1,12 @@
-import React, {useState, useCallback, useRef, useMemo} from 'react';
+import React, {useState, useCallback, useMemo} from 'react';
 import {type GoslingSpec} from 'gosling.js';
-import MetaTable, {MetaTableSpec} from './MetaTable';
+import {MetaTableSpec} from './MetaTable';
 import 'higlass/dist/hglib.css';
 import './index.css';
-import PhyloTree, {PhyloTreeSpec} from "./PhyloTree";
+import {PhyloTreeSpec} from "./PhyloTree";
 import GoslingComponentWrapper from "./GoslingComponentWrapper";
 import {Datum} from "gosling.js/dist/src/core/gosling.schema";
+import MetaComponentWrapper from "./MetaComponentWrapper";
 
 export type MetaSpec = {
     width: number;
@@ -34,6 +35,7 @@ export default function GoslingMetaComponent(props: GoslingMetaComponentProps) {
 
     const [renderGos, setRenderGos] = useState(metaSpec.type !== "tree")
 
+    const [metaWidth, setMetaWidth] = useState(0);
     const [gosHeight, setGosHeight] = useState(0);
     const [trackShape, setTrackShape] = useState({x: 0, y: 0, height: 0, width: 0});
     // range of data relevant for the meta visualization
@@ -54,9 +56,9 @@ export default function GoslingMetaComponent(props: GoslingMetaComponentProps) {
         return (height);
     }, [gosHeight, trackShape, connectionType.type]);
     const gosPos = useMemo(() => {
-        let pos = {left: 100 + metaSpec.width, top: 100}
+        const pos = {left: 100 + metaWidth, top: 100}
         return (pos);
-    }, [trackShape, connectionType.type])
+    }, [metaWidth])
     const metaPos = useMemo(() => {
         let pos = {left: 100, top: 100}
         if (connectionType.type === "strong") {
@@ -64,37 +66,17 @@ export default function GoslingMetaComponent(props: GoslingMetaComponentProps) {
         }
         return (pos)
     }, [trackShape])
-    let goslingView: React.ReactElement | null = null;
-    let metaView: React.ReactElement | null = null;
-    switch (metaSpec.type) {
-        case "table":
-            // dataId will be removed when rawData event only returns the data of the track, or when we have a proper brush event
-            goslingView = <GoslingComponentWrapper spec={goslingSpec} trackId={connectionType.trackId}
-                                                   onRangeUpdate={handleRangeUpdate} dataId={"Accnum"}
-                                                   setGosHeight={setGosHeight} setTrackShape={setTrackShape}/>
-            metaView = <MetaTable dataTransform={metaSpec.dataTransform}
-                                  range={range}
-                                  data={data}
-                                  genomicColumns={metaSpec.genomicColumns}
-                                  columns={metaSpec.columns}
-                                  width={metaSpec.width}
-                                  height={metaHeight}/>
-            break;
-        case "tree":
-            goslingView =
-                <GoslingComponentWrapper spec={goslingSpec} trackId={connectionType.trackId} setGosHeight={setGosHeight}
-                                         setTrackShape={setTrackShape}/>
-            metaView = <PhyloTree renderGos={setRenderGos} gosSpec={goslingSpec} linkedTrack={connectionType.trackId}
-                                  width={metaSpec.width} height={metaHeight}/>
-            break;
-    }
     return (
         <div>
             <div id="gosling-component-wrapper" style={{...gosPos}}>
-                {goslingView}
+                <GoslingComponentWrapper type={metaSpec.type} spec={goslingSpec} trackId={connectionType.trackId}
+                                         onRangeUpdate={handleRangeUpdate} dataId={"Accnum"}
+                                         setGosHeight={setGosHeight} setTrackShape={setTrackShape}/>
             </div>
             <div id="metavis-component-wrapper" style={{...metaPos}}>
-                {metaView}
+                <MetaComponentWrapper metaSpec={metaSpec} goslingSpec={goslingSpec} linkedTrack={connectionType.trackId}
+                                      data={data} range={range} setMetaWidth={setMetaWidth} height={metaHeight}
+                                      setRenderGos={setRenderGos}/>
             </div>
         </div>
     );

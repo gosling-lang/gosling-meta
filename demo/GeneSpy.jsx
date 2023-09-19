@@ -23,12 +23,12 @@ const goslingSpec = {
                 range: ['red', 'gray', 'yellow']
             },
             row: {field: 'Accession', type: 'nominal'},
-            id: gosId,
             tracks: [
                 {
                     dataTransform: [
                         {type: 'filter', field: 'Strand', oneOf: ['+']}
                     ],
+                    id: gosId,
                     mark: 'triangleRight',
                     style: {align: 'right'},
                     x: {field: 'Gene start', type: 'genomic', axis: 'none'},

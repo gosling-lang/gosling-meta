@@ -16,7 +16,7 @@ export type PhyloTreeSpec = {
 
 interface PhyloTreeProps {
     data?: Datum[];
-    renderGos: (value: boolean | ((prevVar: boolean) => boolean)) => void;
+    setRenderGos: (value: boolean | ((prevVar: boolean) => boolean)) => void;
     gosSpec: GoslingSpec;
     linkedTrack: string;
     width: number | string;
@@ -25,7 +25,7 @@ interface PhyloTreeProps {
 
 
 export default function PhyloTree(props: PhyloTreeProps) {
-    const {renderGos, gosSpec, linkedTrack, width, height} = props;
+    const {setRenderGos, gosSpec, linkedTrack, width, height} = props;
     const [maxDist, setMaxDist] = useState(1);
     const [trackOrder, setTrackOrder]=useState<string[]>([])
     const traverseTracks = (
@@ -46,7 +46,7 @@ export default function PhyloTree(props: PhyloTreeProps) {
     traverseTracks(gosSpec, (viewSpec:GoslingSpec | View | PartialTrack, i:number, parentTracks:Partial<Track>[]) => {
         if(viewSpec.id === linkedTrack) {
             parentTracks[i] = { ...viewSpec, row: { ...viewSpec.row, domain: trackOrder } };
-            renderGos(true);
+            setRenderGos(true);
         }
     });
     const vegaSpec = useMemo(() => {
@@ -150,6 +150,7 @@ export default function PhyloTree(props: PhyloTreeProps) {
         })
     }, [maxDist, height, width])
     const onNewView = useCallback(view => {
+        console.log(view)
         const leaves = view.data('leaves').slice();
         leaves.sort((a, b) => a.x - b.x);
         setTrackOrder(leaves.map(leaf => leaf.id))

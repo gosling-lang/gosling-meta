@@ -3,10 +3,11 @@ import {GoslingComponent, GoslingRef, GoslingSpec} from "gosling.js";
 import {Datum} from "gosling.js/dist/src/core/gosling.schema";
 
 interface GoslingComponentWrapperProps {
+    type: "table" | "tree";
     spec: GoslingSpec;
     trackId: string;
-    dataId?: string;
-    onRangeUpdate?: (range: [number, number], data: Datum[]) => void;
+    dataId: string;
+    onRangeUpdate: (range: [number, number], data: Datum[]) => void;
     setGosHeight: (height: number) => void;
     setTrackShape: (shape: { x: number, y: number, width: number, height: number }) => void;
 }
@@ -18,19 +19,19 @@ interface GoslingComponentWrapperProps {
  * @returns
  */
 export default function GoslingComponentWrapper(props: GoslingComponentWrapperProps) {
-    const {spec, trackId, dataId, onRangeUpdate, setGosHeight, setTrackShape} = props;
+    const {type, spec, trackId, dataId, onRangeUpdate, setGosHeight, setTrackShape} = props;
     const gosRef = useRef<GoslingRef>(null)
     useEffect(() => {
         if (gosRef.current == null) return;
         const tracks = gosRef.current.api.getTracks();
         const referenceTrack = tracks[tracks.map(d => d.id)
             .indexOf(trackId)];
-        if(referenceTrack) setTrackShape(referenceTrack.shape)
-        if (onRangeUpdate) {
+        if (referenceTrack) setTrackShape(referenceTrack.shape)
+        if (type === "table") {
             // TODO Better: Use a brush event in gosling.js (related issue: #910)
             gosRef.current.api.subscribe('rawData', (type, rawdata) => {
                 // TODO remove this dataId check if brushevent is created (related issues: #909, #894)
-                if (rawdata.data.length > 0 && rawdata.id === trackId && Object.keys(rawdata.data[0]).includes(dataId)) {
+                if (rawdata.data.length > 0 && rawdata.id === trackId) {
                     // gets the column names after applying transformations
                     const range = gosRef.current?.hgApi.api.getLocation(trackId).xDomain;
                     onRangeUpdate(range, rawdata.data);
