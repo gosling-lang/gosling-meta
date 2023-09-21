@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useRef} from 'react';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {GoslingComponent, GoslingRef, GoslingSpec} from "gosling.js";
 import {Datum} from "gosling.js/dist/src/core/gosling.schema";
 
@@ -6,8 +6,10 @@ interface GoslingComponentWrapperProps {
     type: "table" | "tree";
     spec: GoslingSpec;
     trackId: string;
-    dataId: string;
-    onRangeUpdate: (range: [number, number], data: Datum[]) => void;
+    onRangeUpdate: (range: [{ chromosome: string, position: number }, {
+        chromosome: string,
+        position: number
+    }], data: Datum[]) => void;
     setGosHeight: (height: number) => void;
     setTrackShape: (shape: { x: number, y: number, width: number, height: number }) => void;
 }
@@ -19,7 +21,8 @@ interface GoslingComponentWrapperProps {
  * @returns
  */
 export default function GoslingComponentWrapper(props: GoslingComponentWrapperProps) {
-    const {type, spec, trackId, dataId, onRangeUpdate, setGosHeight, setTrackShape} = props;
+    const {type, spec, trackId, onRangeUpdate, setGosHeight, setTrackShape} = props;
+    const [data,setData]=useState(null);
     const gosRef = useRef<GoslingRef>(null)
     useEffect(() => {
         if (gosRef.current == null) return;
@@ -29,16 +32,22 @@ export default function GoslingComponentWrapper(props: GoslingComponentWrapperPr
         if (referenceTrack) setTrackShape(referenceTrack.shape)
         if (type === "table") {
             // TODO Better: Use a brush event in gosling.js (related issue: #910)
-            gosRef.current.api.subscribe('rawData', (type, rawdata) => {
+            gosRef.current.api.subscribe('rawData',(type,eventData)=>{
+                if(trackId===eventData.id){
+                    setData(eventData.data);
+                }
+            })
+            gosRef.current.api.subscribe('location', (type, eventData) => {
                 // TODO remove this dataId check if brushevent is created (related issues: #909, #894)
-                if (rawdata.data.length > 0 && rawdata.id === trackId) {
-                    // gets the column names after applying transformations
-                    const range = gosRef.current?.hgApi.api.getLocation(trackId).xDomain;
-                    onRangeUpdate(range, rawdata.data);
+                if (eventData.id === trackId && data!==null) {
+                    console.log(eventData.genomicRange)
+                    onRangeUpdate(eventData.genomicRange, data);
                 }
             });
             return () => {
+                gosRef.current?.api.unsubscribe('location');
                 gosRef.current?.api.unsubscribe('rawData');
+
             };
         }
     }, []);

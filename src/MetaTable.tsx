@@ -13,7 +13,10 @@ export type MetaTableSpec = {
 
 interface MetaTableProps extends Omit<MetaTableSpec, 'type' | 'data'> {
     data: Datum[];
-    range: [number, number]
+    range: [{ chromosome: string, position: number }, {
+        chromosome: string,
+        position: number
+    }]
     width: number | string;
     height: number | string;
 }
@@ -64,14 +67,14 @@ export default function MetaTable(props: MetaTableProps) {
             const end = genomicColumns[1];
             inRange = data.filter(
                 entry =>
-                    (Number(entry[start]) > range[0] && Number(entry[start]) < range[1]) ||
-                    (Number(entry[end]) > range[0] && Number(entry[end]) < range[1])
+                    (Number(entry[start]) > range[0].position && Number(entry[start]) < range[1].position) ||
+                    (Number(entry[end]) > range[0].position && Number(entry[end]) < range[1].position)
             );
             // features have only start (point features)
         } else {
             const position = genomicColumns[0];
             inRange = data.filter(
-                entry => Number(entry[position]) > range[0] && Number(entry[position]) < range[1]
+                entry => Number(entry[position]) > range[0].position && Number(entry[position]) < range[1].position
             );
         }
         const uniqueInRange = inRange.filter(

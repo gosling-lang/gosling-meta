@@ -39,7 +39,10 @@ export default function GoslingMetaComponent(props: GoslingMetaComponentProps) {
     const [gosHeight, setGosHeight] = useState(0);
     const [trackShape, setTrackShape] = useState({x: 0, y: 0, height: 0, width: 0});
     // range of data relevant for the meta visualization
-    const [range, setRange] = useState<[number, number]>([0, 0])
+    const [range, setRange] = useState<[{ chromosome: string|null, position: number }, {
+        chromosome: string|null,
+        position: number
+    }]>([{chromosome:null, position: 0}, {chromosome:null,position:0}])
     // data relevant for the meta visualization
     const [data, setData] = useState<Datum[]>([])
     const handleRangeUpdate = useCallback((range, data) => {
@@ -70,7 +73,7 @@ export default function GoslingMetaComponent(props: GoslingMetaComponentProps) {
         <div>
             <div id="gosling-component-wrapper" style={{...gosPos}}>
                 <GoslingComponentWrapper type={metaSpec.type} spec={goslingSpec} trackId={connectionType.trackId}
-                                         onRangeUpdate={handleRangeUpdate} dataId={"Accnum"}
+                                         onRangeUpdate={handleRangeUpdate}
                                          setGosHeight={setGosHeight} setTrackShape={setTrackShape}/>
             </div>
             <div id="metavis-component-wrapper" style={{...metaPos}}>

@@ -10,7 +10,10 @@ interface MetaComponentWrapperProps {
     goslingSpec: GoslingSpec;
     linkedTrack: string;
     data: Datum[];
-    range: [number, number];
+    range: [{ chromosome: string, position: number }, {
+        chromosome: string,
+        position: number
+    }];
     setMetaWidth: (height: number) => void;
     height: number;
     setRenderGos: (renderGos: boolean) => void;
