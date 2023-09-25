@@ -22,13 +22,13 @@ interface GoslingComponentWrapperProps {
  */
 export default function GoslingComponentWrapper(props: GoslingComponentWrapperProps) {
     const {type, spec, trackId, onRangeUpdate, setGosHeight, setTrackShape} = props;
-    const [data,setData]=useState(null);
+    const [data,setData]=useState<Datum[]>([]);
     const gosRef = useRef<GoslingRef>(null)
     useEffect(() => {
         if (gosRef.current == null) return;
-        const tracks = gosRef.current.api.getTracks();
-        const referenceTrack = tracks[tracks.map(d => d.id)
-            .indexOf(trackId)];
+        const views = gosRef.current.api.getViews();
+        const referenceTrack=gosRef.current.api.getTrack(trackId)
+        console.log(referenceTrack,trackId,gosRef.current.api.getTracksAndViews())
         if (referenceTrack) setTrackShape(referenceTrack.shape)
         if (type === "table") {
             // TODO Better: Use a brush event in gosling.js (related issue: #910)
@@ -40,7 +40,6 @@ export default function GoslingComponentWrapper(props: GoslingComponentWrapperPr
             gosRef.current.api.subscribe('location', (type, eventData) => {
                 // TODO remove this dataId check if brushevent is created (related issues: #909, #894)
                 if (eventData.id === trackId && data!==null) {
-                    console.log(eventData.genomicRange)
                     onRangeUpdate(eventData.genomicRange, data);
                 }
             });
