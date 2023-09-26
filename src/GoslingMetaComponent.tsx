@@ -7,6 +7,7 @@ import {PhyloTreeSpec} from "./PhyloTree";
 import GoslingComponentWrapper from "./GoslingComponentWrapper";
 import {Datum} from "gosling.js/dist/src/core/gosling.schema";
 import MetaComponentWrapper from "./MetaComponentWrapper";
+import {set} from "vega-lite/build/src/log";
 
 export type MetaSpec = {
     width: number;
@@ -37,7 +38,7 @@ export default function GoslingMetaComponent(props: GoslingMetaComponentProps) {
 
     const [metaWidth, setMetaWidth] = useState(0);
     const [gosHeight, setGosHeight] = useState(0);
-    const [trackShape, setTrackShape] = useState({x: 0, y: 0, height: 0, width: 0});
+    const [trackShape, setTrackShape] = useState({x: 0, y: 0, height: 100, width: 0});
     // range of data relevant for the meta visualization
     const [range, setRange] = useState<[{ chromosome: string|null, position: number }, {
         chromosome: string|null,
@@ -73,7 +74,8 @@ export default function GoslingMetaComponent(props: GoslingMetaComponentProps) {
         <div>
             <div id="gosling-component-wrapper" style={{...gosPos}}>
                 <GoslingComponentWrapper type={metaSpec.type} spec={goslingSpec} trackId={connectionType.trackId}
-                                         onRangeUpdate={handleRangeUpdate}
+                                         setData={setData}
+                                         setRange={setRange}
                                          setGosHeight={setGosHeight} setTrackShape={setTrackShape}/>
             </div>
             <div id="metavis-component-wrapper" style={{...metaPos}}>

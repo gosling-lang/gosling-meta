@@ -30,6 +30,7 @@ export default function MetaComponentWrapper(props: MetaComponentWrapperProps) {
         setMetaWidth(node?.getBoundingClientRect().width)
     }, [props])
     let metaView: React.ReactElement | null = null;
+    console.log(height)
     switch (metaSpec.type) {
         case "table":
             metaView = <MetaTable dataTransform={metaSpec.dataTransform}

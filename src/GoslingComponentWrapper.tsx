@@ -6,10 +6,11 @@ interface GoslingComponentWrapperProps {
     type: "table" | "tree";
     spec: GoslingSpec;
     trackId: string;
-    onRangeUpdate: (range: [{ chromosome: string, position: number }, {
+    setData: (data: Datum[]) => void;
+    setRange: (range: [{ chromosome: string, position: number }, {
         chromosome: string,
         position: number
-    }], data: Datum[]) => void;
+    }]) => void;
     setGosHeight: (height: number) => void;
     setTrackShape: (shape: { x: number, y: number, width: number, height: number }) => void;
 }
@@ -21,26 +22,21 @@ interface GoslingComponentWrapperProps {
  * @returns
  */
 export default function GoslingComponentWrapper(props: GoslingComponentWrapperProps) {
-    const {type, spec, trackId, onRangeUpdate, setGosHeight, setTrackShape} = props;
-    const [data,setData]=useState<Datum[]>([]);
+    const {type, spec, trackId, setData, setRange, setGosHeight, setTrackShape} = props;
     const gosRef = useRef<GoslingRef>(null)
     useEffect(() => {
         if (gosRef.current == null) return;
-        const views = gosRef.current.api.getViews();
-        const referenceTrack=gosRef.current.api.getTrack(trackId)
-        console.log(referenceTrack,trackId,gosRef.current.api.getTracksAndViews())
-        if (referenceTrack) setTrackShape(referenceTrack.shape)
         if (type === "table") {
-            // TODO Better: Use a brush event in gosling.js (related issue: #910)
-            gosRef.current.api.subscribe('rawData',(type,eventData)=>{
-                if(trackId===eventData.id){
+            const referenceTrack = gosRef.current.api.getTrack(trackId)
+            if (referenceTrack) setTrackShape(referenceTrack.shape)
+            gosRef.current.api.subscribe('rawData', (type, eventData) => {
+                if (trackId === eventData.id) {
                     setData(eventData.data);
                 }
             })
             gosRef.current.api.subscribe('location', (type, eventData) => {
-                // TODO remove this dataId check if brushevent is created (related issues: #909, #894)
-                if (eventData.id === trackId && data!==null) {
-                    onRangeUpdate(eventData.genomicRange, data);
+                if (eventData.id === trackId) {
+                    setRange(eventData.genomicRange);
                 }
             });
             return () => {
@@ -48,6 +44,9 @@ export default function GoslingComponentWrapper(props: GoslingComponentWrapperPr
                 gosRef.current?.api.unsubscribe('rawData');
 
             };
+        } else if (type === 'tree') {
+            const referenceTrack= gosRef.current.api.getTrack("trackId")
+            if (referenceTrack) setTrackShape(referenceTrack.shape)
         }
     }, []);
     const containerRef = useCallback((node) => {
