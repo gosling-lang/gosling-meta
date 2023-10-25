@@ -7,8 +7,21 @@ const goslingSpec = {
     subtitle: 'Genomic neighborhood visualization with aligned phylogenetic tree',
     description: 'Idea: https://doi.org/10.1093/bioinformatics/bty459',
     assembly: [['', 11000]],
+    arrangement: 'horizontal',
+    spacing:0,
     static: true,
     views: [
+        {
+            tracks: [
+                {
+                    type: "dummy-track",
+                    id: "tree",
+                }
+            ],
+            width: 350,
+            // TODO: see issue #980
+            height: 330
+        },
         {
             alignment: 'overlay',
             data: {
@@ -22,13 +35,16 @@ const goslingSpec = {
                 domain: ['anchor', 'conserved', 'disrupted'],
                 range: ['red', 'gray', 'yellow']
             },
-            row: {field: 'Accession', type: 'nominal'},
+            id: gosId,
+            row: {
+                field: 'Accession',
+                type: 'nominal',
+            },
             tracks: [
                 {
                     dataTransform: [
                         {type: 'filter', field: 'Strand', oneOf: ['+']}
                     ],
-                    id: gosId,
                     mark: 'triangleRight',
                     style: {align: 'right'},
                     x: {field: 'Gene start', type: 'genomic', axis: 'none'},
@@ -62,7 +78,7 @@ export default function GeneSpy() {
         <GoslingMetaComponent
             goslingSpec={goslingSpec}
             metaSpec={metaSpec}
-            connectionType={{type: "strong", trackId: gosId}}
+            connectionType={{type: "strong", trackId: gosId, placeholderId: "tree"}}
         />
     );
 }

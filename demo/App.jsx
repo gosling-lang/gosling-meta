@@ -3,13 +3,11 @@ import { Routes, Route, Link } from 'react-router-dom';
 import IslandViewer from './IslandViewer';
 import 'higlass/dist/hglib.css';
 import GeneSpy from "./GeneSpy";
-import VerySimple from "./verySimpleExample";
 
 // The full list of examples
 const examples = {
 	IslandViewer: <IslandViewer/>,
 	GeneSpy: <GeneSpy/>,
-	Test: <VerySimple/>
 }
 
 function App() {

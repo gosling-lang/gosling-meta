@@ -1,11 +1,12 @@
-import React, {useCallback, useState, useMemo} from 'react';
+import React, {useCallback, useState, useMemo, useEffect} from 'react';
 import {
     DataDeep,
     Datum,
-	PartialTrack,
-	Track,
-	View
-} from 'gosling.js/dist/src/core/gosling.schema';import {GoslingRef, GoslingSpec} from "gosling.js";
+    PartialTrack,
+    Track,
+    View
+} from 'gosling.js/dist/src/core/gosling.schema';
+import {GoslingSpec} from "gosling.js";
 import {Vega} from "react-vega";
 
 
@@ -16,44 +17,59 @@ export type PhyloTreeSpec = {
 
 interface PhyloTreeProps {
     data?: Datum[];
-    setRenderGos: (value: boolean | ((prevVar: boolean) => boolean)) => void;
     gosSpec: GoslingSpec;
+    setGoslingSpec: (object) => void;
     linkedTrack: string;
-    width: number | string;
-    height: number | string;
+    width: number;
+    height: number;
 }
 
 
 export default function PhyloTree(props: PhyloTreeProps) {
-    const {setRenderGos, gosSpec, linkedTrack, width, height} = props;
+    const {gosSpec, setGoslingSpec, linkedTrack, width, height} = props;
     const [maxDist, setMaxDist] = useState(1);
-    const [trackOrder, setTrackOrder]=useState<string[]>([])
-    const traverseTracks = (
+    const [trackOrder, setTrackOrder] = useState<string[]>([])
+    const [containerWidth, setContainerWidth] = useState(width);
+    // the width of the tree needs to be recalculated since the width of the tree leaves can vary
+    const localWidth = useMemo(() => {
+        if (containerWidth > width && containerWidth < 2 * width) {
+            return width - (containerWidth - width);
+        } else {
+            return width;
+        }
+    }, [width, containerWidth])
+    const traverseTracks = useCallback((
         spec: GoslingSpec | View | PartialTrack,
-        callback: (t: Partial<Track>, i: number, ts: Partial<Track>[]) => void)=>{
+        callback: (t: Partial<Track>, i: number, ts: Partial<Track>[]) => void) => {
         if ('tracks' in spec) {
             spec.tracks.forEach((t, i, ts) => {
                 traverseTracks(t, callback);
             });
         } else if ('views' in spec) {
-             spec.views.forEach((t, i, ts) => {
+            spec.views.forEach((t, i, ts) => {
                 callback(t, i, ts);
                 traverseTracks(t, callback);
             });
         }
-    }
+    }, [])
 
-    traverseTracks(gosSpec, (viewSpec:GoslingSpec | View | PartialTrack, i:number, parentTracks:Partial<Track>[]) => {
-        if(viewSpec.id === linkedTrack) {
-            parentTracks[i] = { ...viewSpec, row: { ...viewSpec.row, domain: trackOrder } };
-            setRenderGos(true);
+    useEffect(() => {
+        if (trackOrder.length > 0) {
+            const spec = structuredClone(gosSpec);
+            traverseTracks(spec, (viewSpec: GoslingSpec | View | PartialTrack, i: number, parentTracks: Partial<Track>[]) => {
+                if (viewSpec.id === linkedTrack) {
+                    parentTracks[i] = {...viewSpec, row: {...viewSpec.row, domain: trackOrder}};
+                    setGoslingSpec(spec)
+                }
+            });
         }
-    });
+    }, [trackOrder])
+
     const vegaSpec = useMemo(() => {
         return ({
             $schema: 'https://vega.github.io/schema/vega/v5.json',
             description: 'An example of Cartesian layouts for a node-link diagram of hierarchical data.',
-            width: width,
+            width: localWidth,
             height: height,
             padding: 0,
             data: [
@@ -123,7 +139,7 @@ export default function PhyloTree(props: PhyloTreeProps) {
                         update: {
                             x: {field: 'x'},
                             y: {field: 'y'},
-                            x2: {value: width},
+                            x2: {value: localWidth},
                             y2: {field: 'y'},
                             stroke: {value: '#eee'},
                         }
@@ -139,7 +155,7 @@ export default function PhyloTree(props: PhyloTreeProps) {
                             baseline: {value: 'middle'}
                         },
                         update: {
-                            x: {value: width},
+                            x: {value: localWidth},
                             y: {field: 'y'},
                             dx: {signal: 'datum.children ? -7 : 7'},
                             align: 'right'
@@ -148,14 +164,17 @@ export default function PhyloTree(props: PhyloTreeProps) {
                 }
             ]
         })
-    }, [maxDist, height, width])
+    }, [maxDist, height, width, localWidth])
     const onNewView = useCallback(view => {
-        console.log(view)
         const leaves = view.data('leaves').slice();
+        const renderedWidth = view.container().getBoundingClientRect().width;
+        if (width < renderedWidth) {
+            setContainerWidth(renderedWidth);
+        }
         leaves.sort((a, b) => a.x - b.x);
         setTrackOrder(leaves.map(leaf => leaf.id))
         setMaxDist(Math.max(...leaves.map(d => d.distance)))
-    }, [])
+    }, [width])
 
 
     return (

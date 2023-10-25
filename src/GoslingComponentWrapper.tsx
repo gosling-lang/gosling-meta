@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useRef, useState} from 'react';
+import React, {useEffect, useRef} from 'react';
 import {GoslingComponent, GoslingRef, GoslingSpec} from "gosling.js";
 import {Datum} from "gosling.js/dist/src/core/gosling.schema";
 
@@ -6,13 +6,13 @@ interface GoslingComponentWrapperProps {
     type: "table" | "tree";
     spec: GoslingSpec;
     trackId: string;
+    placeholderId:string;
     setData: (data: Datum[]) => void;
     setRange: (range: [{ chromosome: string, position: number }, {
         chromosome: string,
         position: number
     }]) => void;
-    setGosHeight: (height: number) => void;
-    setTrackShape: (shape: { x: number, y: number, width: number, height: number }) => void;
+    setMetaDimensions: (shape: { x: number, y: number, width: number, height: number }) => void;
 }
 
 
@@ -22,13 +22,12 @@ interface GoslingComponentWrapperProps {
  * @returns
  */
 export default function GoslingComponentWrapper(props: GoslingComponentWrapperProps) {
-    const {type, spec, trackId, setData, setRange, setGosHeight, setTrackShape} = props;
+    const {type, spec, trackId, placeholderId,setData, setRange, setMetaDimensions} = props;
     const gosRef = useRef<GoslingRef>(null)
     useEffect(() => {
         if (gosRef.current == null) return;
+        setMetaDimensions(gosRef.current.api.getTrack(placeholderId).shape)
         if (type === "table") {
-            const referenceTrack = gosRef.current.api.getTrack(trackId)
-            if (referenceTrack) setTrackShape(referenceTrack.shape)
             gosRef.current.api.subscribe('rawData', (type, eventData) => {
                 if (trackId === eventData.id) {
                     setData(eventData.data);
@@ -44,14 +43,8 @@ export default function GoslingComponentWrapper(props: GoslingComponentWrapperPr
                 gosRef.current?.api.unsubscribe('rawData');
 
             };
-        } else if (type === 'tree') {
-            const referenceTrack= gosRef.current.api.getTrack("trackId")
-            if (referenceTrack) setTrackShape(referenceTrack.shape)
         }
     }, []);
-    const containerRef = useCallback((node) => {
-        setGosHeight(node?.getBoundingClientRect().height)
-    }, [props])
-    return (<div ref={containerRef}><GoslingComponent spec={spec} ref={gosRef} padding={0}
+    return (<div><GoslingComponent spec={spec} ref={gosRef} padding={0}
                                                       experimental={{"reactive": true}}/></div>);
 }

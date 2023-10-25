@@ -1,4 +1,4 @@
-import React, {useCallback} from 'react';
+import React from 'react';
 import {GoslingSpec} from "gosling.js";
 import {Datum} from "gosling.js/dist/src/core/gosling.schema";
 import MetaTable from "./MetaTable";
@@ -8,15 +8,15 @@ import {MetaSpec} from "./GoslingMetaComponent";
 interface MetaComponentWrapperProps {
     metaSpec: MetaSpec;
     goslingSpec: GoslingSpec;
+    setGoslingSpec: (object) => void;
     linkedTrack: string;
     data: Datum[];
     range: [{ chromosome: string, position: number }, {
         chromosome: string,
         position: number
     }];
-    setMetaWidth: (height: number) => void;
     height: number;
-    setRenderGos: (renderGos: boolean) => void;
+    width: number;
 }
 
 /**
@@ -25,12 +25,8 @@ interface MetaComponentWrapperProps {
  * @returns
  */
 export default function MetaComponentWrapper(props: MetaComponentWrapperProps) {
-    const {metaSpec, goslingSpec,linkedTrack, data, range, setMetaWidth, height, setRenderGos} = props;
-    const containerRef = useCallback((node) => {
-        setMetaWidth(node?.getBoundingClientRect().width)
-    }, [props])
+    const {metaSpec, goslingSpec, setGoslingSpec, linkedTrack, data, range, height, width} = props;
     let metaView: React.ReactElement | null = null;
-    console.log(height)
     switch (metaSpec.type) {
         case "table":
             metaView = <MetaTable dataTransform={metaSpec.dataTransform}
@@ -38,13 +34,14 @@ export default function MetaComponentWrapper(props: MetaComponentWrapperProps) {
                                   data={data}
                                   genomicColumns={metaSpec.genomicColumns}
                                   columns={metaSpec.columns}
-                                  width={metaSpec.width}
+                                  width={width}
                                   height={height}/>
             break;
         case "tree":
-            metaView = <PhyloTree setRenderGos={setRenderGos} gosSpec={goslingSpec} linkedTrack={linkedTrack}
-                                  width={metaSpec.width} height={height}/>
+            metaView = <PhyloTree gosSpec={goslingSpec} setGoslingSpec={setGoslingSpec}
+                                  linkedTrack={linkedTrack}
+                                  width={width} height={height}/>
             break;
     }
-    return (<div ref={containerRef}>{metaView}</div>);
+    return (<div style={{marginTop: 46}}>{metaView}</div>);
 }
