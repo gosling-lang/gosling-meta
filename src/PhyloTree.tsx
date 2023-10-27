@@ -1,11 +1,11 @@
 import React, {useCallback, useState, useMemo, useEffect} from 'react';
-import {
+import type {
     DataDeep,
     Datum,
     PartialTrack,
     Track,
     View
-} from 'gosling.js/dist/src/core/gosling.schema';
+} from 'gosling.js/dist/src/gosling-schema';
 import {GoslingSpec} from "gosling.js";
 import {Vega} from "react-vega";
 
