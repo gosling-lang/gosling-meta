@@ -1,12 +1,12 @@
 import React, {useEffect, useRef} from 'react';
 import {GoslingComponent, GoslingRef, GoslingSpec} from "gosling.js";
-import {Datum} from "gosling.js/dist/src/core/gosling.schema";
+import type {Datum} from 'gosling.js/dist/src/gosling-schema';
 
 interface GoslingComponentWrapperProps {
     type: "table" | "tree";
     spec: GoslingSpec;
     trackId: string;
-    placeholderId:string;
+    placeholderId: string;
     setData: (data: Datum[]) => void;
     setRange: (range: [{ chromosome: string, position: number }, {
         chromosome: string,
@@ -22,7 +22,7 @@ interface GoslingComponentWrapperProps {
  * @returns
  */
 export default function GoslingComponentWrapper(props: GoslingComponentWrapperProps) {
-    const {type, spec, trackId, placeholderId,setData, setRange, setMetaDimensions} = props;
+    const {type, spec, trackId, placeholderId, setData, setRange, setMetaDimensions} = props;
     const gosRef = useRef<GoslingRef>(null)
     useEffect(() => {
         if (gosRef.current == null) return;
@@ -46,5 +46,5 @@ export default function GoslingComponentWrapper(props: GoslingComponentWrapperPr
         }
     }, []);
     return (<div><GoslingComponent spec={spec} ref={gosRef} padding={0}
-                                                      experimental={{"reactive": true}}/></div>);
+                                   experimental={{"reactive": true}}/></div>);
 }

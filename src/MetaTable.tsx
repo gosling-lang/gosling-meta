@@ -1,6 +1,6 @@
 import React, {useCallback, useMemo} from 'react';
 import {mergeData, renameColumns} from "./table-data-transform";
-import {DataDeep, Datum} from "gosling.js/dist/src/core/gosling.schema";
+import type { Datum, DataDeep } from 'gosling.js/dist/src/gosling-schema';
 import TanStackTable from "./TanStackTable";
 
 export type MetaTableSpec = {

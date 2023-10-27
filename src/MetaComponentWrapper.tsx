@@ -1,6 +1,6 @@
 import React from 'react';
 import {GoslingSpec} from "gosling.js";
-import {Datum} from "gosling.js/dist/src/core/gosling.schema";
+import type {Datum} from 'gosling.js/dist/src/gosling-schema';
 import MetaTable from "./MetaTable";
 import PhyloTree from "./PhyloTree";
 import {MetaSpec} from "./GoslingMetaComponent";
