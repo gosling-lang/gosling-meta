@@ -1,6 +1,7 @@
 import React, {useCallback, useMemo} from 'react';
 import {mergeData, renameColumns} from "./table-data-transform";
 import {DataDeep, Datum} from "gosling.js/dist/src/core/gosling.schema";
+import TanStackTable from "./TanStackTable";
 
 export type MetaTableSpec = {
     type: "table",
@@ -84,7 +85,7 @@ export default function MetaTable(props: MetaTableProps) {
     }, [genomicColumns, data, range])
     const columnNames = useMemo(() => {
         return columns ?? (dataInRange.length > 0 ? Object.keys(dataInRange[0]) : []);
-    }, [columns,dataInRange])
+    }, [columns, dataInRange])
     return (
         <>
             {dataInRange.length === 0 ? null :
@@ -96,30 +97,7 @@ export default function MetaTable(props: MetaTableProps) {
                         width: Number(width) - 10,
                     }}
                 >
-                    <table className="table-fixed border-collapse border border-slate-400">
-                        <thead className="capitalize">
-                        <tr className="border border-slate-300  bg-slate-100">
-                            {columnNames.map(d => (
-                                <th className="px-1" key={d}>
-                                    {d}
-                                </th>
-                            ))}
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {dataInRange.map(d => (
-                            <tr className="border border-slate-300" key={JSON.stringify(d)}>
-                                {columnNames.map(key => {
-                                    return (
-                                        <td className="px-1" key={key}>
-                                            {d[key]}
-                                        </td>
-                                    );
-                                })}
-                            </tr>
-                        ))}
-                        </tbody>
-                    </table>
+                    <TanStackTable data={dataInRange} columnNames={columnNames}/>
                 </div>
             }
         </>
