@@ -1,8 +1,7 @@
-import type * as d3 from 'd3';
 import type {
     MergeColumnsTransform, RenameColumnsTransform
 } from './MetaTable';
-import {Datum} from "gosling.js/dist/src/core/gosling.schema";
+import type {Datum} from 'gosling.js/dist/src/gosling-schema';
 
 
 /**

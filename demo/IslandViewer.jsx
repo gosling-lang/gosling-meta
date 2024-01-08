@@ -35,7 +35,7 @@ const goslingSpec = {
             ],
             width: 600,
             // TODO: automatically align dummy track to other tracks or find a way to get height of titles etc., see issue #980
-            height:linearHeight+circularRadius*2+30
+            height: linearHeight + circularRadius * 2 + 30
         },
         {
             arrangement: 'vertical',
@@ -247,7 +247,14 @@ const metaSpec = {
         }
     ],
     genomicColumns: ['Gene start', 'Gene end'],
-    columns: ['Prediction Method', 'Gene name', 'Accnum', 'Product']
+    metadataColumns: [
+        {type: 'genomic', columnName: 'Gene start'},
+        {type: 'genomic', columnName: 'Gene end'},
+        {type: 'nominal', columnName: 'Prediction Method'},
+        {type: 'nominal', columnName: 'Gene name'},
+        {type: 'nominal', columnName: 'Accnum'},
+        {type: 'nominal', columnName: 'Product'}
+    ]
 }
 
 export default function IslandViewer() {

@@ -1,13 +1,14 @@
 import React, {useCallback, useMemo} from 'react';
 import {mergeData, renameColumns} from "./table-data-transform";
-import type { Datum, DataDeep } from 'gosling.js/dist/src/gosling-schema';
+import type {Datum, DataDeep} from 'gosling.js/dist/src/gosling-schema';
+
 export type MetaTableSpec = {
     type: "table",
     // TODO: allow custom data specification for metatable
     data?: DataDeep;
     dataTransform: tableDataTransform[];
-    genomicColumns: [string, string] | [string];
-    columns?: string[];
+    genomicColumns: [string] | [string, string];
+    metadataColumns: { type: 'genomic' | 'nominal' | 'quantitative', columnName: string, columnFormat: string }[];
 }
 
 interface MetaTableProps extends Omit<MetaTableSpec, 'type' | 'data'> {
@@ -43,7 +44,7 @@ export interface RenameColumnsTransform {
  * @constructor
  */
 export default function MetaTable(props: MetaTableProps) {
-    const {data, range, dataTransform, genomicColumns, columns, width, height} = props;
+    const {data, range, dataTransform, genomicColumns, metadataColumns, width, height} = props;
     const transformData = useCallback((data) => {
         let dataTransformed: Datum[] = Array.from(data);
         dataTransform.forEach(transform => {
@@ -82,8 +83,8 @@ export default function MetaTable(props: MetaTableProps) {
         return (transformData(uniqueInRange));
     }, [genomicColumns, data, range])
     const columnNames = useMemo(() => {
-        return columns ?? (dataInRange.length > 0 ? Object.keys(dataInRange[0]) : []);
-    }, [columns,dataInRange])
+        return metadataColumns.map(d => d.columnName) ?? (dataInRange.length > 0 ? Object.keys(dataInRange[0]) : []);
+    }, [metadataColumns, dataInRange])
     return (
         <>
             {dataInRange.length === 0 ? null :

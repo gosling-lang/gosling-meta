@@ -5,7 +5,7 @@ import 'higlass/dist/hglib.css';
 import './index.css';
 import {PhyloTreeSpec} from "./PhyloTree";
 import GoslingComponentWrapper from "./GoslingComponentWrapper";
-import {Datum} from "gosling.js/dist/src/core/gosling-schema";
+import type {Datum} from "gosling.js/dist/src/gosling-schema";
 import MetaComponentWrapper from "./MetaComponentWrapper";
 
 export type MetaSpec = (MetaTableSpec | PhyloTreeSpec)
@@ -52,7 +52,7 @@ export default function GoslingMetaComponent(props: GoslingMetaComponentProps) {
             </div>
             <div id="metavis-component-wrapper">
                 <MetaComponentWrapper metaSpec={metaSpec} goslingSpec={goslingSpec} setGoslingSpec={setGoslingSpec}
-                                      linkedTrack={connectionType.trackId}
+                                      linkedTrackId={connectionType.trackId}
                                       data={data} range={range}
                                       height={metaDimensions.height}
                                       width={metaDimensions.width}/>
