@@ -16,11 +16,15 @@
         "deploy": "touch dist/.nojekyll; gh-pages -d dist -t --git git"
     },
     "dependencies": {
-        "gosling.js": "^0.9.30",
+        "gosling.js": "^0.10.3",
         "higlass": "^1.12.4",
         "pixi.js": "^6.3.0",
         "react": "^18.2.0",
-        "react-dom": "^18.2.0"
+        "react-dom": "^18.2.0",
+        "react-router-dom": "^6.11.2",
+        "react-vega": "^7.6.0",
+        "vega": "^5.25.0",
+        "vega-lite": "^5.9.3"
     },
     "devDependencies": {
         "@types/react": "^18.2.6",

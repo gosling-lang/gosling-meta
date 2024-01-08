@@ -1,17 +1,19 @@
-import React, {useRef, useState, useEffect} from 'react';
-import {GoslingComponent, type GoslingRef, type GoslingSpec} from 'gosling.js';
-import MetaTable, {MetaTableSpec} from './MetaTable';
+import React, {useState} from 'react';
+import {type GoslingSpec} from 'gosling.js';
+import {MetaTableSpec} from './MetaTable';
 import 'higlass/dist/hglib.css';
 import './index.css';
+import {PhyloTreeSpec} from "./PhyloTree";
+import GoslingComponentWrapper from "./GoslingComponentWrapper";
+import type {Datum} from "gosling.js/dist/src/gosling-schema";
+import MetaComponentWrapper from "./MetaComponentWrapper";
 
-export type MetaSpec = {
-    width: number;
-    height?: number;
-} & MetaTableSpec
+export type MetaSpec = (MetaTableSpec | PhyloTreeSpec)
 
 interface ConnectionType {
     type: 'weak' | 'strong';
     trackId: string;
+    placeholderId: string;
 }
 
 
@@ -28,43 +30,32 @@ interface GoslingMetaComponentProps {
  */
 export default function GoslingMetaComponent(props: GoslingMetaComponentProps) {
     const {goslingSpec, metaSpec, connectionType} = props;
-
-    const gosRef = useRef<GoslingRef>(null);
-    const containerRef = useRef<HTMLInputElement>(null);
-
-    let gosPos, metaPos;
-    if (connectionType.type == 'weak') {
-        gosPos = {left: 100 + metaSpec.width, top: 100};
-        metaPos = {left: 100, top: 100};
-    } else {
-        // TODO: get position of track that is used for alignment when connectionType=="strong" (Related to issue #909)
-    }
-
-    const [metaHeight, setMetaHeight] = useState(metaSpec.height ?? 100);
-    useEffect(() => {
-        if (containerRef.current == null) return;
-        // if the user does not provide a height and the alignmentType is "loose" use the full height of the gosling component
-        if (!metaSpec.height && connectionType.type === "weak") {
-            setMetaHeight(containerRef.current.clientHeight)
-        }
-        // TODO: get height of spec when connectionType=="strong" (Related to issue #909)
-    }, [metaSpec.height, connectionType.type, containerRef.current])
-
-
+    const [goslingSpecUpdateable, setGoslingSpec] = useState(structuredClone(goslingSpec));
+    const [metaDimensions, setMetaDimensions] = useState({x: 0, y: 0, width: 100, height: 100})
+    // range of data relevant for the meta visualization
+    const [range, setRange] = useState<[{ chromosome: string, position: number }, {
+        chromosome: string,
+        position: number
+    }]>([{chromosome: "", position: 0}, {chromosome: "", position: 0}])
+    // data relevant for the meta visualization
+    const [data, setData] = useState<Datum[]>([])
     return (
         <div>
-            <div id="gosling-component-wrapper" style={{...gosPos}} ref={containerRef}>
-                <GoslingComponent ref={gosRef} spec={goslingSpec} padding={0}/>
+            <div id="gosling-component-wrapper">
+                <GoslingComponentWrapper type={metaSpec.type}
+                                         spec={goslingSpecUpdateable}
+                                         trackId={connectionType.trackId}
+                                         placeholderId={connectionType.placeholderId}
+                                         setMetaDimensions={setMetaDimensions}
+                                         setData={setData}
+                                         setRange={setRange}/>
             </div>
-            <div id="metavis-component-wrapper" style={{...metaPos}}>
-                {metaSpec.type === 'table' ?
-                    <MetaTable dataTransform={metaSpec.dataTransform}
-                               gosRef={gosRef}
-                               linkedTrack={connectionType.trackId}
-                               genomicColumns={metaSpec.genomicColumns}
-                               columns={metaSpec.columns}
-                               width={metaSpec.width}
-                               height={metaHeight}/> : null}
+            <div id="metavis-component-wrapper">
+                <MetaComponentWrapper metaSpec={metaSpec} goslingSpec={goslingSpec} setGoslingSpec={setGoslingSpec}
+                                      linkedTrackId={connectionType.trackId}
+                                      data={data} range={range}
+                                      height={metaDimensions.height}
+                                      width={metaDimensions.width}/>
             </div>
         </div>
     );
