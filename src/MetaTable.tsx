@@ -6,7 +6,7 @@ import TanStackTable from "./TanStackTable";
 export type MetaTableSpec = {
     type: "table",
     // TODO: allow custom data specification for metatable
-    data?: DataDeep;
+    data: DataDeep;
     dataTransform: tableDataTransform[];
     genomicColumns: [string, string] | [string];
     columns?: string[];
