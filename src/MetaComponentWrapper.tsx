@@ -9,7 +9,7 @@ interface MetaComponentWrapperProps {
     metaSpec: MetaSpec;
     goslingSpec: GoslingSpec;
     setGoslingSpec: (object) => void;
-    linkedTrack: string;
+    linkedTrackId: string;
     data: Datum[];
     range: [{ chromosome: string, position: number }, {
         chromosome: string,
@@ -25,7 +25,7 @@ interface MetaComponentWrapperProps {
  * @returns
  */
 export default function MetaComponentWrapper(props: MetaComponentWrapperProps) {
-    const {metaSpec, goslingSpec, setGoslingSpec, linkedTrack, data, range, height, width} = props;
+    const {metaSpec, goslingSpec, setGoslingSpec, linkedTrackId, data, range, height, width} = props;
     let metaView: React.ReactElement | null = null;
     switch (metaSpec.type) {
         case "table":
@@ -33,13 +33,13 @@ export default function MetaComponentWrapper(props: MetaComponentWrapperProps) {
                                   range={range}
                                   data={data}
                                   genomicColumns={metaSpec.genomicColumns}
-                                  columns={metaSpec.columns}
+                                  metadataColumns={metaSpec.metadataColumns}
                                   width={width}
                                   height={height}/>
             break;
         case "tree":
             metaView = <PhyloTree gosSpec={goslingSpec} setGoslingSpec={setGoslingSpec}
-                                  linkedTrack={linkedTrack}
+                                  linkedTrackId={linkedTrackId}
                                   width={width} height={height}/>
             break;
     }

@@ -19,14 +19,14 @@ interface PhyloTreeProps {
     data?: Datum[];
     gosSpec: GoslingSpec;
     setGoslingSpec: (object) => void;
-    linkedTrack: string;
+    linkedTrackId: string;
     width: number;
     height: number;
 }
 
 
 export default function PhyloTree(props: PhyloTreeProps) {
-    const {gosSpec, setGoslingSpec, linkedTrack, width, height} = props;
+    const {gosSpec, setGoslingSpec, linkedTrackId, width, height} = props;
     const [maxDist, setMaxDist] = useState(1);
     const [trackOrder, setTrackOrder] = useState<string[]>([])
     const [containerWidth, setContainerWidth] = useState(width);
@@ -57,7 +57,7 @@ export default function PhyloTree(props: PhyloTreeProps) {
         if (trackOrder.length > 0) {
             const spec = structuredClone(gosSpec);
             traverseTracks(spec, (viewSpec: GoslingSpec | View | PartialTrack, i: number, parentTracks: Partial<Track>[]) => {
-                if (viewSpec.id === linkedTrack) {
+                if (viewSpec.id === linkedTrackId) {
                     parentTracks[i] = {...viewSpec, row: {...viewSpec.row, domain: trackOrder}};
                     setGoslingSpec(spec)
                 }
