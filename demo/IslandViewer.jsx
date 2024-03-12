@@ -255,7 +255,8 @@ const metaSpec = {
         {type: 'nominal', columnName: 'Gene name'},
         {type: 'nominal', columnName: 'Accnum'},
         {type: 'nominal', columnName: 'Product'}
-    ]
+    ],
+    linkageType: 'jump'
 }
 
 export default function IslandViewer() {

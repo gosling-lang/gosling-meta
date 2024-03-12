@@ -37,6 +37,7 @@ export default function GoslingComponentWrapper(props: GoslingComponentWrapperPr
         if (type === "table") {
             gosRef.current.api.subscribe('rawData', (type, eventData) => {
                 if (trackId === eventData.id) {
+                    console.log(eventData)
                     setData(eventData.data);
                 }
             })

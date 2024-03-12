@@ -41,7 +41,8 @@ export default function MetaComponentWrapper(props: MetaComponentWrapperProps) {
                                   metadataColumns={metaSpec.metadataColumns}
                                   width={width}
                                   height={height}
-                                  setZoomTo={setZoomTo}/>
+                                  setZoomTo={setZoomTo}
+                                  linkageType={metaSpec.linkageType}/>
             break;
         case "tree":
             metaView = <PhyloTree gosSpec={goslingSpec} setGoslingSpec={setGoslingSpec}

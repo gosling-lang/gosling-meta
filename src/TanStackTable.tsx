@@ -15,6 +15,8 @@ import {Datum} from "gosling.js/dist/src/gosling-schema";
 interface TanStackTableProps {
     data: Datum[];
     columnNames: string[];
+    isSortable: boolean;
+    isJumpable: boolean;
     jump: (range: [{ chromosome: string, position: number }, {
         chromosome: string,
         position: number
@@ -22,7 +24,7 @@ interface TanStackTableProps {
 }
 
 export default function TanStackTable(props: TanStackTableProps) {
-    const {data, columnNames, jump} = props;
+    const {data, columnNames, isSortable, isJumpable, jump} = props;
 
     const [sorting, setSorting] = React.useState<SortingState>([])
 
@@ -54,29 +56,33 @@ export default function TanStackTable(props: TanStackTableProps) {
                         {headerGroup.headers.map(header => {
                             return (
                                 <th key={header.id} colSpan={header.colSpan}>
-                                    {header.isPlaceholder ? null : (
-                                        <div
-                                            {...{
-                                                className: header.column.getCanSort()
-                                                    ? 'cursor-pointer select-none'
-                                                    : '',
-                                                onClick: header.column.getToggleSortingHandler(),
-                                            }}
-                                        >
-                                            {flexRender(
+                                        {header.isPlaceholder ? null : (
+                                            isSortable?<div
+                                                {...{
+                                                    className: header.column.getCanSort()
+                                                        ? 'cursor-pointer select-none'
+                                                        : '',
+                                                    onClick: header.column.getToggleSortingHandler(),
+                                                }}
+                                            >
+                                                {flexRender(
+                                                    header.column.columnDef.header,
+                                                    header.getContext()
+                                                )}
+                                                {{
+                                                    asc: ' 🔼',
+                                                    desc: ' 🔽',
+                                                }[header.column.getIsSorted() as string] ?? null}
+                                            </div>:
+                                                flexRender(
                                                 header.column.columnDef.header,
                                                 header.getContext()
-                                            )}
-                                            {{
-                                                asc: ' 🔼',
-                                                desc: ' 🔽',
-                                            }[header.column.getIsSorted() as string] ?? null}
-                                        </div>
-                                    )}
-                                </th>
+                                            )
+                                        )}
+                                    </th>
                             )
                         })}
-                        <th/>
+                        {isJumpable ? <th/> : null}
                     </tr>
                 ))}
                 </thead>
@@ -97,7 +103,7 @@ export default function TanStackTable(props: TanStackTableProps) {
                                         </td>
                                     )
                                 })}
-                                <td>
+                                {isJumpable ? <td>
                                     <button onClick={() =>
                                         jump([{
                                             chromosome: String(row.original.Accession),
@@ -108,7 +114,7 @@ export default function TanStackTable(props: TanStackTableProps) {
                                         }])
                                     }>Jump
                                     </button>
-                                </td>
+                                </td> : null}
                             </tr>
                         )
                     })}

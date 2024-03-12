@@ -1,6 +1,6 @@
 import React, {useCallback, useMemo} from 'react';
 import {mergeData, renameColumns} from "./table-data-transform";
-import type { Datum, DataDeep } from 'gosling.js/dist/src/gosling-schema';
+import type {Datum, DataDeep} from 'gosling.js/dist/src/gosling-schema';
 import TanStackTable from "./TanStackTable";
 
 export type MetaTableSpec = {
@@ -11,7 +11,7 @@ export type MetaTableSpec = {
     genomicColumns: [string] | [string, string];
     chromosomeField: string;
     metadataColumns: { type: 'genomic' | 'nominal' | 'quantitative', columnName: string, columnFormat: string }[];
-    linkageType: string;
+    linkageType: 'scroll' | 'jump' | 'window';
     // scroll: The visible part of the table (sorted by coordinates) is the selected range in the visualization
     // jump: Click button in the table to jump to a gene in the visualization
     // window: The table shows only the selected range in the visualization
@@ -54,7 +54,18 @@ export interface RenameColumnsTransform {
  * @constructor
  */
 export default function MetaTable(props: MetaTableProps) {
-    const {data, range, dataTransform, genomicColumns, chromosomeField,metadataColumns, width, height,setZoomTo} = props;
+    const {
+        data,
+        range,
+        dataTransform,
+        genomicColumns,
+        chromosomeField,
+        metadataColumns,
+        linkageType,
+        width,
+        height,
+        setZoomTo
+    } = props;
     const transformData = useCallback((data) => {
         let dataTransformed: Datum[] = Array.from(data);
         dataTransform.forEach(transform => {
@@ -70,31 +81,41 @@ export default function MetaTable(props: MetaTableProps) {
         return (dataTransformed);
     }, [dataTransform]);
     const dataInRange = useMemo(() => {
-        let inRange: Datum[];
-        // features have start and end
-        if (genomicColumns.length === 2) {
-            const start = genomicColumns[0];
-            const end = genomicColumns[1];
-            inRange = data.filter(
-                entry =>
-                    (Number(entry[start]) > range[0].position && Number(entry[start]) < range[1].position) ||
-                    (Number(entry[end]) > range[0].position && Number(entry[end]) < range[1].position)
-            );
-            // features have only start (point features)
-        } else {
-            const position = genomicColumns[0];
-            inRange = data.filter(
-                entry => Number(entry[position]) > range[0].position && Number(entry[position]) < range[1].position
-            );
+        switch (linkageType) {
+            case "window":
+                let inRange: Datum[];
+                // features have start and end
+                if (genomicColumns.length === 2) {
+                    const start = genomicColumns[0];
+                    const end = genomicColumns[1];
+                    inRange = data.filter(
+                        entry =>
+                            (Number(entry[start]) > range[0].position && Number(entry[start]) < range[1].position) ||
+                            (Number(entry[end]) > range[0].position && Number(entry[end]) < range[1].position)
+                    );
+                    // features have only start (point features)
+                } else {
+                    const position = genomicColumns[0];
+                    inRange = data.filter(
+                        entry => Number(entry[position]) > range[0].position && Number(entry[position]) < range[1].position
+                    );
+                }
+                const uniqueInRange = inRange.filter(
+                    (v, i, a) => a.findIndex(v2 => JSON.stringify(v2) === JSON.stringify(v)) === i
+                );
+                return transformData(uniqueInRange);
+            case "jump":
+                return transformData(data);
+            case "scroll":
+                return transformData(data);
         }
-        const uniqueInRange = inRange.filter(
-            (v, i, a) => a.findIndex(v2 => JSON.stringify(v2) === JSON.stringify(v)) === i
-        );
-        return (transformData(uniqueInRange));
+
     }, [genomicColumns, data, range])
     const columnNames = useMemo(() => {
         return metadataColumns.map(d => d.columnName) ?? (dataInRange.length > 0 ? Object.keys(dataInRange[0]) : []);
     }, [metadataColumns, dataInRange])
+    const isSortable = linkageType !== 'scroll'
+    const isJumpable= linkageType !== 'scroll'
     return (
         <>
             {dataInRange.length === 0 ? null :
@@ -106,7 +127,8 @@ export default function MetaTable(props: MetaTableProps) {
                         width: Number(width) - 10,
                     }}
                 >
-                    <TanStackTable data={dataInRange} columnNames={columnNames} jump={setZoomTo}/>
+                    <TanStackTable data={dataInRange} columnNames={columnNames} isSortable={isSortable} isJumpable={isJumpable}
+                                   jump={setZoomTo}/>
                 </div>
             }
         </>
