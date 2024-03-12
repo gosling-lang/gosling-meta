@@ -67,8 +67,8 @@ const goslingSpec = {
 const metaSpec = {
     type: 'tree',
     data: {
-        url: 'https://s3.amazonaws.com/gosling-lang.org/data/GeneSpy/gene_spy_example.nwk',
-        type: 'nwk',
+        url: 'https://s3.amazonaws.com/gosling-lang.org/data/GeneSpy/gene_spy_tree.json',
+        type: 'json',
     },
     width: 400,
 }

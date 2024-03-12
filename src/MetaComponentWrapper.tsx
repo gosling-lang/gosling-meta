@@ -45,7 +45,7 @@ export default function MetaComponentWrapper(props: MetaComponentWrapperProps) {
                                   linkageType={metaSpec.linkageType}/>
             break;
         case "tree":
-            metaView = <PhyloTree gosSpec={goslingSpec} setGoslingSpec={setGoslingSpec}
+            metaView = <PhyloTree dataUrl={metaSpec.data.url} gosSpec={goslingSpec} setGoslingSpec={setGoslingSpec}
                                   linkedTrackId={linkedTrackId}
                                   width={width} height={height}/>
             break;

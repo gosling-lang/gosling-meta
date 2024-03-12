@@ -11,13 +11,12 @@ export type MetaTableSpec = {
     genomicColumns: [string] | [string, string];
     chromosomeField: string;
     metadataColumns: { type: 'genomic' | 'nominal' | 'quantitative', columnName: string, columnFormat: string }[];
-    linkageType: 'scroll' | 'jump' | 'window';
-    // scroll: The visible part of the table (sorted by coordinates) is the selected range in the visualization
-    // jump: Click button in the table to jump to a gene in the visualization
-    // window: The table shows only the selected range in the visualization
+    linkageType: 'jump' | 'window';    // jump: Click button in the table to jump to a gene in the visualization, window: The table shows only the selected range in the visualization
+    dataId: 'string';
+
 }
 
-interface MetaTableProps extends Omit<MetaTableSpec, 'type' | 'data'> {
+interface MetaTableProps extends Omit<MetaTableSpec, 'type' | 'data' | 'dataId'> {
     data: Datum[];
     range: [{ chromosome: string, position: number }, {
         chromosome: string,
@@ -106,16 +105,12 @@ export default function MetaTable(props: MetaTableProps) {
                 return transformData(uniqueInRange);
             case "jump":
                 return transformData(data);
-            case "scroll":
-                return transformData(data);
         }
 
     }, [genomicColumns, data, range])
     const columnNames = useMemo(() => {
         return metadataColumns.map(d => d.columnName) ?? (dataInRange.length > 0 ? Object.keys(dataInRange[0]) : []);
     }, [metadataColumns, dataInRange])
-    const isSortable = linkageType !== 'scroll'
-    const isJumpable= linkageType !== 'scroll'
     return (
         <>
             {dataInRange.length === 0 ? null :
@@ -127,7 +122,7 @@ export default function MetaTable(props: MetaTableProps) {
                         width: Number(width) - 10,
                     }}
                 >
-                    <TanStackTable data={dataInRange} columnNames={columnNames} isSortable={isSortable} isJumpable={isJumpable}
+                    <TanStackTable data={dataInRange} columnNames={columnNames} isSortable={true} isJumpable={true}
                                    jump={setZoomTo}/>
                 </div>
             }

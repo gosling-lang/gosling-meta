@@ -49,11 +49,13 @@ export default function GoslingMetaComponent(props: GoslingMetaComponentProps) {
                 <GoslingComponentWrapper type={metaSpec.type}
                                          spec={goslingSpecUpdateable}
                                          trackId={connectionType.trackId}
+                                         dataId={metaSpec.type === "table" ? metaSpec.dataId : ""}
                                          placeholderId={connectionType.placeholderId}
                                          position={zoomTo[0].chromosome + ":" + zoomTo[0].position + "-" + zoomTo[1].position}
                                          setMetaDimensions={setMetaDimensions}
                                          setData={setData}
-                                         setRange={setRange}/>
+                                         setRange={setRange}
+                />
             </div>
             <div id="metavis-component-wrapper">
                 <MetaComponentWrapper metaSpec={metaSpec} goslingSpec={goslingSpec} setGoslingSpec={setGoslingSpec}

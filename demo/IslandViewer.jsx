@@ -11,6 +11,7 @@ const islandData = {
     x: {field: 'Island start', type: 'genomic'},
     xe: {field: 'Island end', type: 'genomic'}
 };
+const dataID = 'dataView';
 const detailID = 'detailedView';
 const circularRadius = 200;
 const centerRadius = 0.5;
@@ -46,6 +47,26 @@ const goslingSpec = {
                     alignment: 'overlay',
                     spacing: 0.1,
                     tracks: [
+                        {
+                            data: {
+                                url: 'https://s3.amazonaws.com/gosling-lang.org/data/IslandViewer/NC_004631.1_genes.csv',
+                                type: 'csv',
+                                chromosomeField: 'Accession',
+                                genomicFields: ['Gene start', 'Gene end']
+                            },
+                            id: dataID,
+                            x: {field: 'Gene start', type: 'genomic'},
+                            xe: {field: 'Gene end', type: 'genomic'},
+                            y: {value: 5.5 * linearSize},
+                            size: {value: linearSize},
+                            mark: 'rect',
+                            visibility: [{
+                                threshold: 1,
+                                target: 'mark',
+                                operation: 'lt',
+                                measure: 'zoomLevel',
+                            }]
+                        },
                         {
                             data: {
                                 url: 'https://s3.amazonaws.com/gosling-lang.org/data/IslandViewer/NC_004631.1_GCcontent.csv',
@@ -256,7 +277,8 @@ const metaSpec = {
         {type: 'nominal', columnName: 'Accnum'},
         {type: 'nominal', columnName: 'Product'}
     ],
-    linkageType: 'jump'
+    linkageType: 'window',
+    dataId: dataID
 }
 
 export default function IslandViewer() {

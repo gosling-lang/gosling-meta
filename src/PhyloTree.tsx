@@ -13,10 +13,11 @@ import {Vega} from "react-vega";
 export type PhyloTreeSpec = {
     type: "tree",
     data: DataDeep;
+    width: number;
 }
 
 interface PhyloTreeProps {
-    data?: Datum[];
+    dataUrl: Datum[];
     gosSpec: GoslingSpec;
     setGoslingSpec: (object) => void;
     linkedTrackId: string;
@@ -26,7 +27,7 @@ interface PhyloTreeProps {
 
 
 export default function PhyloTree(props: PhyloTreeProps) {
-    const {gosSpec, setGoslingSpec, linkedTrackId, width, height} = props;
+    const {dataUrl,gosSpec, setGoslingSpec, linkedTrackId, width, height} = props;
     const [maxDist, setMaxDist] = useState(1);
     const [trackOrder, setTrackOrder] = useState<string[]>([])
     const [containerWidth, setContainerWidth] = useState(width);
@@ -64,7 +65,6 @@ export default function PhyloTree(props: PhyloTreeProps) {
             });
         }
     }, [trackOrder])
-
     const vegaSpec = useMemo(() => {
         return ({
             $schema: 'https://vega.github.io/schema/vega/v5.json',
@@ -75,7 +75,7 @@ export default function PhyloTree(props: PhyloTreeProps) {
             data: [
                 {
                     name: 'tree',
-                    url: 'https://s3.amazonaws.com/gosling-lang.org/data/GeneSpy/gene_spy_tree.json',
+                    url: dataUrl,
                     transform: [
                         {
                             type: 'stratify',

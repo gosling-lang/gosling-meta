@@ -6,6 +6,7 @@ interface GoslingComponentWrapperProps {
     type: "table" | "tree";
     spec: GoslingSpec;
     trackId: string;
+    dataId: string;
     placeholderId: string;
     position: string,
     setData: (data: Datum[]) => void;
@@ -23,21 +24,21 @@ interface GoslingComponentWrapperProps {
  * @returns
  */
 export default function GoslingComponentWrapper(props: GoslingComponentWrapperProps) {
-    const {type, spec, trackId, placeholderId, position, setData, setRange, setMetaDimensions} = props;
+    const {type, spec, trackId, dataId,placeholderId, position, setData, setRange,setMetaDimensions} = props;
     const gosRef = useRef<GoslingRef>(null)
    useEffect(() => {
         if (gosRef.current == null) return;
         if (type === "table" && position!==":0-0") {
-            gosRef.current.api.zoomTo(trackId, position,200)
+            gosRef.current.api.zoomTo(trackId, position, 5000)
         }
     }, [position])
     useEffect(() => {
         if (gosRef.current == null) return;
         setMetaDimensions(gosRef.current.api.getTrack(placeholderId).shape)
         if (type === "table") {
+            // TODO: not desired to have an extra track for the data! Maybe event that always returns full data?
             gosRef.current.api.subscribe('rawData', (type, eventData) => {
-                if (trackId === eventData.id) {
-                    console.log(eventData)
+                if (dataId === eventData.id) {
                     setData(eventData.data);
                 }
             })

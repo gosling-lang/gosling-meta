@@ -17,7 +17,7 @@
     },
     "dependencies": {
         "@tanstack/react-table": "^8.10.7",
-        "gosling.js": "^0.13.2",
+        "gosling.js": "^0.16.0",
         "higlass": "^1.12.4",
         "pixi.js": "^6.3.0",
         "react": "^18.2.0",
