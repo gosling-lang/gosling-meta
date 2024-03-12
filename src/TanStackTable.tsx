@@ -15,10 +15,14 @@ import {Datum} from "gosling.js/dist/src/gosling-schema";
 interface TanStackTableProps {
     data: Datum[];
     columnNames: string[];
+    jump: (range: [{ chromosome: string, position: number }, {
+        chromosome: string,
+        position: number
+    }]) => void;
 }
 
-export default function TanStackTable(props:TanStackTableProps) {
-    const {data, columnNames} = props;
+export default function TanStackTable(props: TanStackTableProps) {
+    const {data, columnNames, jump} = props;
 
     const [sorting, setSorting] = React.useState<SortingState>([])
 
@@ -72,6 +76,7 @@ export default function TanStackTable(props:TanStackTableProps) {
                                 </th>
                             )
                         })}
+                        <th/>
                     </tr>
                 ))}
                 </thead>
@@ -92,6 +97,18 @@ export default function TanStackTable(props:TanStackTableProps) {
                                         </td>
                                     )
                                 })}
+                                <td>
+                                    <button onClick={() =>
+                                        jump([{
+                                            chromosome: String(row.original.Accession),
+                                            position: Number(row.original["Gene start"])
+                                        }, {
+                                            chromosome: String(row.original.Accession),
+                                            position: Number(row.original["Gene end"])
+                                        }])
+                                    }>Jump
+                                    </button>
+                                </td>
                             </tr>
                         )
                     })}

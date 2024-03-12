@@ -37,6 +37,10 @@ export default function GoslingMetaComponent(props: GoslingMetaComponentProps) {
         chromosome: string,
         position: number
     }]>([{chromosome: "", position: 0}, {chromosome: "", position: 0}])
+    const [zoomTo, setZoomTo] = useState<[{ chromosome: string, position: number }, {
+        chromosome: string,
+        position: number
+    }]>([{chromosome: "", position: 0}, {chromosome: "", position: 0}])
     // data relevant for the meta visualization
     const [data, setData] = useState<Datum[]>([])
     return (
@@ -46,6 +50,7 @@ export default function GoslingMetaComponent(props: GoslingMetaComponentProps) {
                                          spec={goslingSpecUpdateable}
                                          trackId={connectionType.trackId}
                                          placeholderId={connectionType.placeholderId}
+                                         position={zoomTo[0].chromosome + ":" + zoomTo[0].position + "-" + zoomTo[1].position}
                                          setMetaDimensions={setMetaDimensions}
                                          setData={setData}
                                          setRange={setRange}/>
@@ -55,7 +60,8 @@ export default function GoslingMetaComponent(props: GoslingMetaComponentProps) {
                                       linkedTrackId={connectionType.trackId}
                                       data={data} range={range}
                                       height={metaDimensions.height}
-                                      width={metaDimensions.width}/>
+                                      width={metaDimensions.width}
+                                      setZoomTo={setZoomTo}/>
             </div>
         </div>
     );

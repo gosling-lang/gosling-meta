@@ -9,7 +9,12 @@ export type MetaTableSpec = {
     data: DataDeep;
     dataTransform: tableDataTransform[];
     genomicColumns: [string] | [string, string];
+    chromosomeField: string;
     metadataColumns: { type: 'genomic' | 'nominal' | 'quantitative', columnName: string, columnFormat: string }[];
+    linkageType: string;
+    // scroll: The visible part of the table (sorted by coordinates) is the selected range in the visualization
+    // jump: Click button in the table to jump to a gene in the visualization
+    // window: The table shows only the selected range in the visualization
 }
 
 interface MetaTableProps extends Omit<MetaTableSpec, 'type' | 'data'> {
@@ -20,6 +25,10 @@ interface MetaTableProps extends Omit<MetaTableSpec, 'type' | 'data'> {
     }]
     width: number | string;
     height: number | string;
+    setZoomTo: (range: [{ chromosome: string, position: number }, {
+        chromosome: string,
+        position: number
+    }]) => void;
 }
 
 export type tableDataTransform =
@@ -45,7 +54,7 @@ export interface RenameColumnsTransform {
  * @constructor
  */
 export default function MetaTable(props: MetaTableProps) {
-    const {data, range, dataTransform, genomicColumns, metadataColumns, width, height} = props;
+    const {data, range, dataTransform, genomicColumns, chromosomeField,metadataColumns, width, height,setZoomTo} = props;
     const transformData = useCallback((data) => {
         let dataTransformed: Datum[] = Array.from(data);
         dataTransform.forEach(transform => {
@@ -97,7 +106,7 @@ export default function MetaTable(props: MetaTableProps) {
                         width: Number(width) - 10,
                     }}
                 >
-                    <TanStackTable data={dataInRange} columnNames={columnNames}/>
+                    <TanStackTable data={dataInRange} columnNames={columnNames} jump={setZoomTo}/>
                 </div>
             }
         </>

@@ -7,6 +7,7 @@ interface GoslingComponentWrapperProps {
     spec: GoslingSpec;
     trackId: string;
     placeholderId: string;
+    position: string,
     setData: (data: Datum[]) => void;
     setRange: (range: [{ chromosome: string, position: number }, {
         chromosome: string,
@@ -22,8 +23,14 @@ interface GoslingComponentWrapperProps {
  * @returns
  */
 export default function GoslingComponentWrapper(props: GoslingComponentWrapperProps) {
-    const {type, spec, trackId, placeholderId, setData, setRange, setMetaDimensions} = props;
+    const {type, spec, trackId, placeholderId, position, setData, setRange, setMetaDimensions} = props;
     const gosRef = useRef<GoslingRef>(null)
+   useEffect(() => {
+        if (gosRef.current == null) return;
+        if (type === "table" && position!==":0-0") {
+            gosRef.current.api.zoomTo(trackId, position,200)
+        }
+    }, [position])
     useEffect(() => {
         if (gosRef.current == null) return;
         setMetaDimensions(gosRef.current.api.getTrack(placeholderId).shape)

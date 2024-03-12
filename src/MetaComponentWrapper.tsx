@@ -17,6 +17,10 @@ interface MetaComponentWrapperProps {
     }];
     height: number;
     width: number;
+    setZoomTo: (range: [{ chromosome: string, position: number }, {
+        chromosome: string,
+        position: number
+    }]) => void;
 }
 
 /**
@@ -25,7 +29,7 @@ interface MetaComponentWrapperProps {
  * @returns
  */
 export default function MetaComponentWrapper(props: MetaComponentWrapperProps) {
-    const {metaSpec, goslingSpec, setGoslingSpec, linkedTrackId, data, range, height, width} = props;
+    const {metaSpec, goslingSpec, setGoslingSpec, linkedTrackId, data, range, height, width, setZoomTo} = props;
     let metaView: React.ReactElement | null = null;
     switch (metaSpec.type) {
         case "table":
@@ -33,9 +37,11 @@ export default function MetaComponentWrapper(props: MetaComponentWrapperProps) {
                                   range={range}
                                   data={data}
                                   genomicColumns={metaSpec.genomicColumns}
+                                  chromosomeField={metaSpec.chromosomeField}
                                   metadataColumns={metaSpec.metadataColumns}
                                   width={width}
-                                  height={height}/>
+                                  height={height}
+                                  setZoomTo={setZoomTo}/>
             break;
         case "tree":
             metaView = <PhyloTree gosSpec={goslingSpec} setGoslingSpec={setGoslingSpec}
