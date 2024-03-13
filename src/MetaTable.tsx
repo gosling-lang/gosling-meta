@@ -1,5 +1,5 @@
 import React, {useCallback, useMemo} from 'react';
-import {mergeData, renameColumns} from "./table-data-transform";
+import {transformData} from "./table-data-transform";
 import type {Datum, DataDeep} from 'gosling.js/dist/src/gosling-schema';
 import TanStackTable from "./TanStackTable";
 
@@ -47,6 +47,13 @@ export interface RenameColumnsTransform {
     newFields: string[];
 }
 
+export interface DeriveColumnTransform {
+    type: 'derive',
+    operator: 'subtract' | 'add' | 'multiply' | 'divide',
+    fields: [string, string],
+    newField: string
+}
+
 /**
  * Metadata table component
  * @param props
@@ -65,19 +72,14 @@ export default function MetaTable(props: MetaTableProps) {
         height,
         setZoomTo
     } = props;
-    const transformData = useCallback((data) => {
-        let dataTransformed: Datum[] = Array.from(data);
-        dataTransform.forEach(transform => {
-            switch (transform.type) {
-                case("merge"):
-                    dataTransformed = mergeData(transform, data);
-                    break;
-                case("rename"):
-                    dataTransformed = renameColumns(transform, data);
-                    break;
-            }
-        })
-        return (dataTransformed);
+    const transformTableData = useCallback((data) => {
+        if (dataTransform) {
+            let dataTransformed: Datum[] = Array.from(data);
+            dataTransform.forEach(transform => {
+                dataTransformed = transformData(transform, data);
+            })
+            return (dataTransformed);
+        } else return data;
     }, [dataTransform]);
     const dataInRange = useMemo(() => {
         switch (linkageType) {
@@ -102,9 +104,9 @@ export default function MetaTable(props: MetaTableProps) {
                 const uniqueInRange = inRange.filter(
                     (v, i, a) => a.findIndex(v2 => JSON.stringify(v2) === JSON.stringify(v)) === i
                 );
-                return transformData(uniqueInRange);
+                return transformTableData(uniqueInRange);
             case "jump":
-                return transformData(data);
+                return transformTableData(data);
         }
 
     }, [genomicColumns, data, range])

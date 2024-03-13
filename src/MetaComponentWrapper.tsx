@@ -4,6 +4,7 @@ import type {Datum} from 'gosling.js/dist/src/gosling-schema';
 import MetaTable from "./MetaTable";
 import PhyloTree from "./PhyloTree";
 import {MetaSpec} from "./GoslingMetaComponent";
+import ColumnSummarizer from "./ColumnSummarizer";
 
 interface MetaComponentWrapperProps {
     metaSpec: MetaSpec;
@@ -49,6 +50,10 @@ export default function MetaComponentWrapper(props: MetaComponentWrapperProps) {
                                   linkedTrackId={linkedTrackId}
                                   width={width} height={height}/>
             break;
+        case "summary":
+            metaView =
+                <ColumnSummarizer data={data} width={width} height={height} dataTransform={metaSpec.dataTransform}
+                                  targetColumn={metaSpec.targetColumn} plotType={metaSpec.plotType}/>
     }
     return (<div style={{marginTop: 46}}>{metaView}</div>);
 }
