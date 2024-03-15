@@ -1,17 +1,16 @@
 import {VegaLite} from "react-vega";
 import React from "react";
 import {Datum} from "gosling.js/dist/src/gosling-schema";
-import {d} from "vitest/dist/types-dea83b3d";
 
-interface VegaLiteBarchartProps {
+interface VegaLiteHistogramProps {
     data: Datum[];
     field: string;
-    sort: string[];
+    sort?: string[];
     width: number;
     height: number;
 }
 
-export function VegaLiteBarchart(props: VegaLiteBarchartProps) {
+export function VegaLiteHistogram(props: VegaLiteHistogramProps) {
     const {data, field, sort, width, height} = props;
     const schema = {
         "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
@@ -23,30 +22,13 @@ export function VegaLiteBarchart(props: VegaLiteBarchartProps) {
             "type": "fit",
             "contains": "padding"
         },
-        "transform": [
-            {
-                "filter": {"not": {"field": field, "equal": ""}}
-            },
-            {
-                "aggregate": [{"op": "count", "field": field, "as": "count"}],
-                "groupby": [field]
-            },
-            {
-                "impute": "count",
-                "key": field,
-                "keyvals": sort,
-                "value": 0,
-            },
-
-        ],
         "encoding": {
             "x": {
+                "bin": true,
                 "field": field,
-                "sort": sort
             },
             "y": {
-                "field": "count",
-                "type": "quantitative"
+                "aggregate": "count",
             }
         }
     }

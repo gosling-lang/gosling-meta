@@ -52,8 +52,10 @@ export default function MetaComponentWrapper(props: MetaComponentWrapperProps) {
             break;
         case "summary":
             metaView =
-                <ColumnSummarizer data={data} width={width} height={height} dataTransform={metaSpec.dataTransform}
-                                  targetColumn={metaSpec.targetColumn} plotType={metaSpec.plotType}/>
+                <ColumnSummarizer range={range} data={data} genomicColumns={metaSpec.genomicColumns} width={width}
+                                  height={height} dataTransform={metaSpec.dataTransform}
+                                  targetColumn={metaSpec.targetColumn} vegaLiteSpec={metaSpec.vegaLiteSpec}
+                                  plotType={metaSpec.plotType}/>
     }
     return (<div style={{marginTop: 46}}>{metaView}</div>);
 }

@@ -2,21 +2,20 @@ import React, {useCallback, useMemo} from 'react';
 import {transformData} from "./table-data-transform";
 import type {Datum, DataDeep} from 'gosling.js/dist/src/gosling-schema';
 import TanStackTable from "./TanStackTable";
+import {rangeFilter} from "./data-filter";
 
 export type MetaTableSpec = {
     type: "table",
-    // TODO: allow custom data specification for metatable
-    data: DataDeep;
     dataTransform: tableDataTransform[];
     genomicColumns: [string] | [string, string];
     chromosomeField: string;
-    metadataColumns: { type: 'genomic' | 'nominal' | 'quantitative', columnName: string, columnFormat: string }[];
+    metadataColumns: { type: 'genomic' | 'nominal' | 'quantitative', columnName: string, columnFormat?: string }[];
     linkageType: 'jump' | 'window';    // jump: Click button in the table to jump to a gene in the visualization, window: The table shows only the selected range in the visualization
-    dataId: 'string';
+    dataId: string;
 
 }
 
-interface MetaTableProps extends Omit<MetaTableSpec, 'type' | 'data' | 'dataId'> {
+interface MetaTableProps extends Omit<MetaTableSpec, 'type' | 'data' | 'dataId' | 'chromosomeField'> {
     data: Datum[];
     range: [{ chromosome: string, position: number }, {
         chromosome: string,
@@ -32,7 +31,8 @@ interface MetaTableProps extends Omit<MetaTableSpec, 'type' | 'data' | 'dataId'>
 
 export type tableDataTransform =
     | MergeColumnsTransform
-    | RenameColumnsTransform;
+    | RenameColumnsTransform
+    | DeriveColumnTransform;
 
 export interface MergeColumnsTransform {
     type: 'merge';
@@ -65,7 +65,6 @@ export default function MetaTable(props: MetaTableProps) {
         range,
         dataTransform,
         genomicColumns,
-        chromosomeField,
         metadataColumns,
         linkageType,
         width,
@@ -84,27 +83,7 @@ export default function MetaTable(props: MetaTableProps) {
     const dataInRange = useMemo(() => {
         switch (linkageType) {
             case "window":
-                let inRange: Datum[];
-                // features have start and end
-                if (genomicColumns.length === 2) {
-                    const start = genomicColumns[0];
-                    const end = genomicColumns[1];
-                    inRange = data.filter(
-                        entry =>
-                            (Number(entry[start]) > range[0].position && Number(entry[start]) < range[1].position) ||
-                            (Number(entry[end]) > range[0].position && Number(entry[end]) < range[1].position)
-                    );
-                    // features have only start (point features)
-                } else {
-                    const position = genomicColumns[0];
-                    inRange = data.filter(
-                        entry => Number(entry[position]) > range[0].position && Number(entry[position]) < range[1].position
-                    );
-                }
-                const uniqueInRange = inRange.filter(
-                    (v, i, a) => a.findIndex(v2 => JSON.stringify(v2) === JSON.stringify(v)) === i
-                );
-                return transformTableData(uniqueInRange);
+                return transformTableData(rangeFilter(data, genomicColumns, range));
             case "jump":
                 return transformTableData(data);
         }

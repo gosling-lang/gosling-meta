@@ -11,7 +11,6 @@ const islandData = {
     x: {field: 'Island start', type: 'genomic'},
     xe: {field: 'Island end', type: 'genomic'}
 };
-const dataID = 'dataView';
 const detailID = 'detailedView';
 const circularRadius = 200;
 const centerRadius = 0.5;
@@ -47,27 +46,6 @@ const goslingSpec = {
                     alignment: 'overlay',
                     spacing: 0.1,
                     tracks: [
-                        {
-                            data: {
-                                url: 'https://s3.amazonaws.com/gosling-lang.org/data/IslandViewer/NC_004631.1_genes.csv',
-                                type: 'csv',
-                                sampleLength: 1.7976931348623157e+308,
-                                chromosomeField: 'Accession',
-                                genomicFields: ['Gene start', 'Gene end']
-                            },
-                            id: dataID,
-                            x: {field: 'Gene start', type: 'genomic'},
-                            xe: {field: 'Gene end', type: 'genomic'},
-                            y: {value: 5.5 * linearSize},
-                            size: {value: linearSize},
-                            mark: 'rect',
-                            visibility: [{
-                                threshold: 1,
-                                target: 'mark',
-                                operation: 'lt',
-                                measure: 'zoomLevel',
-                            }]
-                        },
                         {
                             data: {
                                 url: 'https://s3.amazonaws.com/gosling-lang.org/data/IslandViewer/NC_004631.1_GCcontent.csv',
@@ -259,30 +237,20 @@ const goslingSpec = {
     ]
 };
 const metaSpec = {
-    type: 'table',
-    dataTransform: [
-        {
-            type: "merge",
-            fields: ["Islands", "Annotations"],
-            mergeChar: "/",
-            newField: "Prediction Method",
-        }
-    ],
+    type: 'summary',
+    dataTransform: [{
+        type: "derive",
+        operator: "subtract",
+        fields: ["Gene end", "Gene start"],
+        newField: "Gene length"
+    }],
+    targetColumn: 'Gene length',
     genomicColumns: ['Gene start', 'Gene end'],
-    chromosomeField: 'Accession',
-    metadataColumns: [
-        {type: 'genomic', columnName: 'Gene start'},
-        {type: 'genomic', columnName: 'Gene end'},
-        {type: 'nominal', columnName: 'Prediction Method'},
-        {type: 'nominal', columnName: 'Gene name'},
-        {type: 'nominal', columnName: 'Accnum'},
-        {type: 'nominal', columnName: 'Product'}
-    ],
-    linkageType: 'jump',
-    dataId: dataID
+    plotType: 'hist',
+    dataId: detailID,
 }
 
-export default function IslandViewer() {
+export default function IslandViewerHist() {
     return (
         <GoslingMetaComponent
             goslingSpec={goslingSpec}

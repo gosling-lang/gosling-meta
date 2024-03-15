@@ -46,7 +46,7 @@ export default function GoslingMetaComponent(props: GoslingMetaComponentProps) {
     const [data, setData] = useState<Datum[]>([])
     return (
         <div>
-            <div id="gosling-component-wrapper">
+            <div id="gosling-component-wrapper" onMouseDown={()=>console.log("down")} onMouseUp={()=>console.log("up")}>
                 <GoslingComponentWrapper type={metaSpec.type}
                                          spec={goslingSpecUpdateable}
                                          trackId={connectionType.trackId}
