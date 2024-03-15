@@ -111,19 +111,31 @@ export default function MetaTable(props: MetaTableProps) {
     const columnNames = useMemo(() => {
         return metadataColumns.map(d => d.columnName) ?? (dataInRange.length > 0 ? Object.keys(dataInRange[0]) : []);
     }, [metadataColumns, dataInRange])
+    const jump = useCallback((row) => {
+        const pos1 = {
+            chromosome: String(row[chromosomeField]),
+            position: Number(row[genomicColumns[0]])
+        }
+        if (genomicColumns.length == 2) {
+            const pos2 = {
+                chromosome: String(row[chromosomeField]),
+                position: Number(row[genomicColumns[1]])
+            }
+            setZoomTo([pos1, pos2])
+        } else {
+            setZoomTo([pos1, pos1])
+        }
+    }, [chromosomeField, genomicColumns]);
     return (
         <>
             {dataInRange.length === 0 ? null :
                 <div
                     style={{
-                        height,
-                        overflowY: 'scroll',
-                        display: 'inline-block',
                         width: Number(width) - 10,
                     }}
                 >
-                    <TanStackTable data={dataInRange} columnNames={columnNames} isSortable={true} isJumpable={true}
-                                   jump={setZoomTo}/>
+                    <TanStackTable data={dataInRange} columnNames={columnNames} isJumpable={true}
+                                   jump={jump} height={height}/>
                 </div>
             }
         </>

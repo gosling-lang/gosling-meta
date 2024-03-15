@@ -51,6 +51,7 @@ const goslingSpec = {
                             data: {
                                 url: 'https://s3.amazonaws.com/gosling-lang.org/data/IslandViewer/NC_004631.1_genes.csv',
                                 type: 'csv',
+                                sampleLength: 1.7976931348623157e+308,
                                 chromosomeField: 'Accession',
                                 genomicFields: ['Gene start', 'Gene end']
                             },
@@ -277,7 +278,7 @@ const metaSpec = {
         {type: 'nominal', columnName: 'Accnum'},
         {type: 'nominal', columnName: 'Product'}
     ],
-    linkageType: 'window',
+    linkageType: 'jump',
     dataId: dataID
 }
 
