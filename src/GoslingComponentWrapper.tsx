@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useRef, useState} from 'react';
+import React, {useCallback, useEffect, useRef} from 'react';
 import {GoslingComponent, GoslingRef, GoslingSpec} from "gosling.js";
 import type {Datum} from 'gosling.js/dist/src/gosling-schema';
 
@@ -33,10 +33,10 @@ export default function GoslingComponentWrapper(props: GoslingComponentWrapperPr
     }, [trackId])
     useEffect(() => {
         if (gosRef.current == null) return;
-        if (type === "table" && position!==":0-0") {
+        if (type === "table" && position !== ":0-0") {
             gosRef.current.api.zoomTo(trackId, position, 5000)
         }
-    }, [position])
+    }, [trackId, position])
     useEffect(() => {
         if (gosRef.current == null) return;
         gosRef.current.api.subscribe("onNewTrack", (type, eventData) => {
@@ -62,7 +62,7 @@ export default function GoslingComponentWrapper(props: GoslingComponentWrapperPr
 
             };
         }
-    }, []);
+    }, [placeholderId, type, dataId, trackId]);
     return (<div><GoslingComponent spec={spec} ref={gosRef} padding={0}
                                    experimental={{"reactive": true}}/></div>);
 }

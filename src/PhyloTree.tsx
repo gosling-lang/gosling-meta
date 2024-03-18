@@ -1,13 +1,13 @@
 import React, {useCallback, useState, useMemo, useEffect} from 'react';
 import type {
     DataDeep,
-    Datum,
     PartialTrack,
     Track,
     View
 } from 'gosling.js/dist/src/gosling-schema';
 import {GoslingSpec} from "gosling.js";
 import {Vega} from "react-vega";
+import {Spec} from "vega";
 
 
 export type PhyloTreeSpec = {
@@ -17,7 +17,7 @@ export type PhyloTreeSpec = {
 }
 
 interface PhyloTreeProps {
-    dataUrl: Datum[];
+    dataUrl: string;
     gosSpec: GoslingSpec;
     setGoslingSpec: (object) => void;
     linkedTrackId: string;
@@ -27,7 +27,7 @@ interface PhyloTreeProps {
 
 
 export default function PhyloTree(props: PhyloTreeProps) {
-    const {dataUrl,gosSpec, setGoslingSpec, linkedTrackId, width, height} = props;
+    const {dataUrl, gosSpec, setGoslingSpec, linkedTrackId, width, height} = props;
     const [maxDist, setMaxDist] = useState(1);
     const [trackOrder, setTrackOrder] = useState<string[]>([])
     const [containerWidth, setContainerWidth] = useState(width);
@@ -43,7 +43,7 @@ export default function PhyloTree(props: PhyloTreeProps) {
         spec: GoslingSpec | View | PartialTrack,
         callback: (t: Partial<Track>, i: number, ts: Partial<Track>[]) => void) => {
         if ('tracks' in spec) {
-            spec.tracks.forEach((t, i, ts) => {
+            spec.tracks.forEach((t) => {
                 traverseTracks(t, callback);
             });
         } else if ('views' in spec) {
@@ -64,8 +64,8 @@ export default function PhyloTree(props: PhyloTreeProps) {
                 }
             });
         }
-    }, [trackOrder])
-    const vegaSpec = useMemo(() => {
+    }, [trackOrder, gosSpec, linkedTrackId])
+    const vegaSpec: Spec = useMemo(() => {
         return ({
             $schema: 'https://vega.github.io/schema/vega/v5.json',
             description: 'An example of Cartesian layouts for a node-link diagram of hierarchical data.',
@@ -158,13 +158,12 @@ export default function PhyloTree(props: PhyloTreeProps) {
                             x: {value: localWidth},
                             y: {field: 'y'},
                             dx: {signal: 'datum.children ? -7 : 7'},
-                            align: 'right'
                         }
                     }
                 }
             ]
         })
-    }, [maxDist, height, width, localWidth])
+    }, [maxDist, height, width, localWidth, dataUrl])
     const onNewView = useCallback(view => {
         const leaves = view.data('leaves').slice();
         const renderedWidth = view.container().getBoundingClientRect().width;

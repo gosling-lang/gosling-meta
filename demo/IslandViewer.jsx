@@ -58,8 +58,6 @@ const goslingSpec = {
                             id: dataID,
                             x: {field: 'Gene start', type: 'genomic'},
                             xe: {field: 'Gene end', type: 'genomic'},
-                            y: {value: 5.5 * linearSize},
-                            size: {value: linearSize},
                             mark: 'rect',
                             visibility: [{
                                 threshold: 1,

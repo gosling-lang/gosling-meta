@@ -4,8 +4,8 @@ import {
     ColumnDef,
     flexRender,
     getCoreRowModel,
-    getSortedRowModel, Row,
-    SortingState,
+    getSortedRowModel,
+    Row,
     useReactTable,
 } from '@tanstack/react-table'
 import {Datum} from "gosling.js/dist/src/gosling-schema";
@@ -14,14 +14,13 @@ import {useVirtualizer} from "@tanstack/react-virtual";
 interface TanStackTableProps {
     data: Datum[];
     columnNames: string[];
-    isSortable: boolean;
     isJumpable: boolean;
     jump: (Datum) => void;
-    height: number;
+    height: string | number;
 }
 
 export default function TanStackTable(props: TanStackTableProps) {
-    const {data, columnNames, isSortable, isJumpable, jump, height} = props;
+    const {data, columnNames, isJumpable, jump, height} = props;
     const columns = React.useMemo<ColumnDef<Datum>[]>(() => {
         const dataColumns = columnNames.map(col => {
             return ({
@@ -46,7 +45,6 @@ export default function TanStackTable(props: TanStackTableProps) {
         columns,
         getCoreRowModel: getCoreRowModel(),
         getSortedRowModel: getSortedRowModel(),
-        debugTable: true,
     })
 
     const {rows} = table.getRowModel()
