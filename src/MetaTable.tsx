@@ -4,8 +4,7 @@ import type {Datum, DataDeep} from 'gosling.js/dist/src/gosling-schema';
 import TanStackTable from "./TanStackTable";
 
 export type MetaTableSpec = {
-    type: "table",
-    // TODO: allow custom data specification for metatable
+    type: 'table',
     data: DataDeep;
     dataTransform: tableDataTransform[];
     genomicColumns: [string] | [string, string];
@@ -60,7 +59,7 @@ export default function MetaTable(props: MetaTableProps) {
         genomicColumns,
         chromosomeField,
         metadataColumns,
-        linkageType,
+        linkageType = "window",
         width,
         height,
         setZoomTo
@@ -69,10 +68,10 @@ export default function MetaTable(props: MetaTableProps) {
         let dataTransformed: Datum[] = Array.from(data);
         dataTransform.forEach(transform => {
             switch (transform.type) {
-                case("merge"):
+                case('merge'):
                     dataTransformed = mergeData(transform, data);
                     break;
-                case("rename"):
+                case('rename'):
                     dataTransformed = renameColumns(transform, data);
                     break;
             }
@@ -81,7 +80,7 @@ export default function MetaTable(props: MetaTableProps) {
     }, [dataTransform]);
     const dataInRange = useMemo(() => {
         switch (linkageType) {
-            case "window":
+            case 'window':
                 let inRange: Datum[];
                 // features have start and end
                 if (genomicColumns.length === 2) {
@@ -103,7 +102,7 @@ export default function MetaTable(props: MetaTableProps) {
                     (v, i, a) => a.findIndex(v2 => JSON.stringify(v2) === JSON.stringify(v)) === i
                 );
                 return transformData(uniqueInRange);
-            case "jump":
+            case 'jump':
                 return transformData(data);
         }
 
