@@ -1,14 +1,13 @@
-import {mergeData, renameColumns} from "./table-data-transform";
-
+import { mergeData, renameColumns } from './table-data-transform';
 
 describe('Table Data Transformation', () => {
     it('Merge', () => {
-        const merged = mergeData({type: 'merge', fields: ['a', 'b'], mergeChar: '/', newField: 'd'}, [
-            {a: 'a', b: 1, c: 'c'},
-            {a: 'b', b: '1', c: 'd'},
-            {a: 'a', b: 3, c: 'c'},
-            {a: 'b', b: 4, c: 'a'},
-            {a: 'b', b: '4', c: 'c'}
+        const merged = mergeData({ type: 'merge', fields: ['a', 'b'], mergeChar: '/', newField: 'd' }, [
+            { a: 'a', b: 1, c: 'c' },
+            { a: 'b', b: '1', c: 'd' },
+            { a: 'a', b: 3, c: 'c' },
+            { a: 'b', b: 4, c: 'a' },
+            { a: 'b', b: '4', c: 'c' }
         ]);
         expect(merged).toMatchInlineSnapshot(`
           [
@@ -36,12 +35,12 @@ describe('Table Data Transformation', () => {
         `);
     });
     it('Rename', () => {
-        const renamed = renameColumns({type: 'rename', fields: ['a', 'b'], newFields: ['d', 'e']}, [
-            {a: 'a', b: 1, c: 'c'},
-            {a: 'b', b: '1', c: 'd'},
-            {a: 'a', b: 3, c: 'c'},
-            {a: 'b', b: 4, c: 'a'},
-            {a: 'b', b: '4', c: 'c'}
+        const renamed = renameColumns({ type: 'rename', fields: ['a', 'b'], newFields: ['d', 'e'] }, [
+            { a: 'a', b: 1, c: 'c' },
+            { a: 'b', b: '1', c: 'd' },
+            { a: 'a', b: 3, c: 'c' },
+            { a: 'b', b: 4, c: 'a' },
+            { a: 'b', b: '4', c: 'c' }
         ]);
         expect(renamed).toMatchInlineSnapshot(`
           [

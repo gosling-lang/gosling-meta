@@ -1,9 +1,9 @@
 import React from 'react';
-import {GoslingSpec} from "gosling.js";
-import type {Datum} from 'gosling.js/dist/src/gosling-schema';
-import MetaTable from "./MetaTable";
-import PhyloTree from "./PhyloTree";
-import {MetaSpec} from "./GoslingMetaComponent";
+import { GoslingSpec } from 'gosling.js';
+import type { Datum } from 'gosling.js/dist/src/gosling-schema';
+import MetaTable from './MetaTable';
+import PhyloTree from './PhyloTree';
+import { MetaSpec } from './GoslingMetaComponent';
 
 interface MetaComponentWrapperProps {
     metaSpec: MetaSpec;
@@ -11,16 +11,24 @@ interface MetaComponentWrapperProps {
     setGoslingSpec: (object) => void;
     linkedTrackId: string;
     data: Datum[];
-    range: [{ chromosome: string, position: number }, {
-        chromosome: string,
-        position: number
-    }];
+    range: [
+        { chromosome: string; position: number },
+        {
+            chromosome: string;
+            position: number;
+        }
+    ];
     height: number;
     width: number;
-    setZoomTo: (range: [{ chromosome: string, position: number }, {
-        chromosome: string,
-        position: number
-    }]) => void;
+    setZoomTo: (
+        range: [
+            { chromosome: string; position: number },
+            {
+                chromosome: string;
+                position: number;
+            }
+        ]
+    ) => void;
 }
 
 /**
@@ -29,26 +37,37 @@ interface MetaComponentWrapperProps {
  * @returns
  */
 export default function MetaComponentWrapper(props: MetaComponentWrapperProps) {
-    const {metaSpec, goslingSpec, setGoslingSpec, linkedTrackId, data, range, height, width, setZoomTo} = props;
+    const { metaSpec, goslingSpec, setGoslingSpec, linkedTrackId, data, range, height, width, setZoomTo } = props;
     let metaView: React.ReactElement | null = null;
     switch (metaSpec.type) {
-        case "table":
-            metaView = <MetaTable dataTransform={metaSpec.dataTransform}
-                                  range={range}
-                                  data={data}
-                                  genomicColumns={metaSpec.genomicColumns}
-                                  chromosomeField={metaSpec.chromosomeField}
-                                  metadataColumns={metaSpec.metadataColumns}
-                                  width={width}
-                                  height={height}
-                                  setZoomTo={setZoomTo}
-                                  linkageType={metaSpec.linkageType}/>
+        case 'table':
+            metaView = (
+                <MetaTable
+                    dataTransform={metaSpec.dataTransform}
+                    range={range}
+                    data={data}
+                    genomicColumns={metaSpec.genomicColumns}
+                    chromosomeField={metaSpec.chromosomeField}
+                    metadataColumns={metaSpec.metadataColumns}
+                    width={width}
+                    height={height}
+                    setZoomTo={setZoomTo}
+                    linkageType={metaSpec.linkageType}
+                />
+            );
             break;
-        case "tree":
-            metaView = <PhyloTree dataUrl={metaSpec.data.url} gosSpec={goslingSpec} setGoslingSpec={setGoslingSpec}
-                                  linkedTrackId={linkedTrackId}
-                                  width={width} height={height}/>
+        case 'tree':
+            metaView = (
+                <PhyloTree
+                    dataUrl={metaSpec.data.url}
+                    gosSpec={goslingSpec}
+                    setGoslingSpec={setGoslingSpec}
+                    linkedTrackId={linkedTrackId}
+                    width={width}
+                    height={height}
+                />
+            );
             break;
     }
-    return (<div style={{marginTop: 46}}>{metaView}</div>);
+    return <div style={{ marginTop: 46 }}>{metaView}</div>;
 }
