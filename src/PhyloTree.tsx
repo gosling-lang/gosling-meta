@@ -1,23 +1,17 @@
-import React, {useCallback, useState, useMemo, useEffect} from 'react';
-import type {
-    DataDeep,
-    Datum,
-    PartialTrack,
-    Track,
-    View
-} from 'gosling.js/dist/src/gosling-schema';
-import {GoslingSpec} from "gosling.js";
-import {Vega} from "react-vega";
-
+import React, { useCallback, useState, useMemo, useEffect } from 'react';
+import type { DataDeep, PartialTrack, Track, View } from 'gosling.js/dist/src/gosling-schema';
+import { GoslingSpec } from 'gosling.js';
+import { Vega } from 'react-vega';
+import { Spec } from 'vega';
 
 export type PhyloTreeSpec = {
-    type: "tree",
+    type: 'tree';
     data: DataDeep;
     width: number;
-}
+};
 
 interface PhyloTreeProps {
-    dataUrl: Datum[];
+    dataUrl: string;
     gosSpec: GoslingSpec;
     setGoslingSpec: (object) => void;
     linkedTrackId: string;
@@ -25,11 +19,10 @@ interface PhyloTreeProps {
     height: number;
 }
 
-
 export default function PhyloTree(props: PhyloTreeProps) {
-    const {dataUrl,gosSpec, setGoslingSpec, linkedTrackId, width, height} = props;
+    const { dataUrl, gosSpec, setGoslingSpec, linkedTrackId, width, height } = props;
     const [maxDist, setMaxDist] = useState(1);
-    const [trackOrder, setTrackOrder] = useState<string[]>([])
+    const [trackOrder, setTrackOrder] = useState<string[]>([]);
     const [containerWidth, setContainerWidth] = useState(width);
     // the width of the tree needs to be recalculated since the width of the tree leaves can vary
     const localWidth = useMemo(() => {
@@ -38,35 +31,42 @@ export default function PhyloTree(props: PhyloTreeProps) {
         } else {
             return width;
         }
-    }, [width, containerWidth])
-    const traverseTracks = useCallback((
-        spec: GoslingSpec | View | PartialTrack,
-        callback: (t: Partial<Track>, i: number, ts: Partial<Track>[]) => void) => {
-        if ('tracks' in spec) {
-            spec.tracks.forEach((t, i, ts) => {
-                traverseTracks(t, callback);
-            });
-        } else if ('views' in spec) {
-            spec.views.forEach((t, i, ts) => {
-                callback(t, i, ts);
-                traverseTracks(t, callback);
-            });
-        }
-    }, [])
+    }, [width, containerWidth]);
+    const traverseTracks = useCallback(
+        (
+            spec: GoslingSpec | View | PartialTrack,
+            callback: (t: Partial<Track>, i: number, ts: Partial<Track>[]) => void
+        ) => {
+            if ('tracks' in spec) {
+                spec.tracks.forEach(t => {
+                    traverseTracks(t, callback);
+                });
+            } else if ('views' in spec) {
+                spec.views.forEach((t, i, ts) => {
+                    callback(t, i, ts);
+                    traverseTracks(t, callback);
+                });
+            }
+        },
+        []
+    );
 
     useEffect(() => {
         if (trackOrder.length > 0) {
             const spec = structuredClone(gosSpec);
-            traverseTracks(spec, (viewSpec: GoslingSpec | View | PartialTrack, i: number, parentTracks: Partial<Track>[]) => {
-                if (viewSpec.id === linkedTrackId) {
-                    parentTracks[i] = {...viewSpec, row: {...viewSpec.row, domain: trackOrder}};
-                    setGoslingSpec(spec)
+            traverseTracks(
+                spec,
+                (viewSpec: GoslingSpec | View | PartialTrack, i: number, parentTracks: Partial<Track>[]) => {
+                    if (viewSpec.id === linkedTrackId) {
+                        parentTracks[i] = { ...viewSpec, row: { ...viewSpec.row, domain: trackOrder } };
+                        setGoslingSpec(spec);
+                    }
                 }
-            });
+            );
         }
-    }, [trackOrder])
-    const vegaSpec = useMemo(() => {
-        return ({
+    }, [trackOrder, gosSpec, linkedTrackId]);
+    const vegaSpec: Spec = useMemo(() => {
+        return {
             $schema: 'https://vega.github.io/schema/vega/v5.json',
             description: 'An example of Cartesian layouts for a node-link diagram of hierarchical data.',
             width: localWidth,
@@ -85,15 +85,15 @@ export default function PhyloTree(props: PhyloTreeProps) {
                         {
                             type: 'tree',
                             method: 'cluster',
-                            field: {field: 'distance'},
-                            sort: {field: 'value', order: 'ascending'},
-                            size: [{signal: 'height'}, {signal: 'width'}],
+                            field: { field: 'distance' },
+                            sort: { field: 'value', order: 'ascending' },
+                            size: [{ signal: 'height' }, { signal: 'width' }],
                             separation: false,
                             as: ['y', 'x', 'depth', 'children']
                         },
                         {
                             type: 'formula',
-                            expr: 'width  * (datum.distance/' + maxDist + ')',
+                            expr: `width  * (datum.distance/${maxDist})`,
                             as: 'x'
                         }
                     ]
@@ -112,7 +112,7 @@ export default function PhyloTree(props: PhyloTreeProps) {
                     name: 'links',
                     source: 'tree',
                     transform: [
-                        {type: 'treelinks'},
+                        { type: 'treelinks' },
                         {
                             type: 'linkpath',
                             orient: 'horizontal',
@@ -124,60 +124,59 @@ export default function PhyloTree(props: PhyloTreeProps) {
             marks: [
                 {
                     type: 'path',
-                    from: {data: 'links'},
+                    from: { data: 'links' },
                     encode: {
                         update: {
-                            path: {field: 'path'},
-                            stroke: {value: '#000'}
+                            path: { field: 'path' },
+                            stroke: { value: '#000' }
                         }
                     }
                 },
                 {
                     type: 'rule',
-                    from: {data: 'leaves'},
+                    from: { data: 'leaves' },
                     encode: {
                         update: {
-                            x: {field: 'x'},
-                            y: {field: 'y'},
-                            x2: {value: localWidth},
-                            y2: {field: 'y'},
-                            stroke: {value: '#eee'},
+                            x: { field: 'x' },
+                            y: { field: 'y' },
+                            x2: { value: localWidth },
+                            y2: { field: 'y' },
+                            stroke: { value: '#eee' }
                         }
                     }
                 },
                 {
                     type: 'text',
-                    from: {data: 'leaves'},
+                    from: { data: 'leaves' },
                     encode: {
                         enter: {
-                            text: {field: 'name'},
-                            fontSize: {value: 9},
-                            baseline: {value: 'middle'}
+                            text: { field: 'name' },
+                            fontSize: { value: 9 },
+                            baseline: { value: 'middle' }
                         },
                         update: {
-                            x: {value: localWidth},
-                            y: {field: 'y'},
-                            dx: {signal: 'datum.children ? -7 : 7'},
-                            align: 'right'
+                            x: { value: localWidth },
+                            y: { field: 'y' },
+                            dx: { signal: 'datum.children ? -7 : 7' }
                         }
                     }
                 }
             ]
-        })
-    }, [maxDist, height, width, localWidth])
-    const onNewView = useCallback(view => {
-        const leaves = view.data('leaves').slice();
-        const renderedWidth = view.container().getBoundingClientRect().width;
-        if (width < renderedWidth) {
-            setContainerWidth(renderedWidth);
-        }
-        leaves.sort((a, b) => a.x - b.x);
-        setTrackOrder(leaves.map(leaf => leaf.id))
-        setMaxDist(Math.max(...leaves.map(d => d.distance)))
-    }, [width])
-
-
-    return (
-        <Vega spec={vegaSpec} onNewView={onNewView} actions={false}/>
+        };
+    }, [maxDist, height, width, localWidth, dataUrl]);
+    const onNewView = useCallback(
+        view => {
+            const leaves = view.data('leaves').slice();
+            const renderedWidth = view.container().getBoundingClientRect().width;
+            if (width < renderedWidth) {
+                setContainerWidth(renderedWidth);
+            }
+            leaves.sort((a, b) => a.x - b.x);
+            setTrackOrder(leaves.map(leaf => leaf.id));
+            setMaxDist(Math.max(...leaves.map(d => d.distance)));
+        },
+        [width]
     );
+
+    return <Vega spec={vegaSpec} onNewView={onNewView} actions={false} />;
 }

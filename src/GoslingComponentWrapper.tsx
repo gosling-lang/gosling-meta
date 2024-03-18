@@ -9,15 +9,19 @@ interface GoslingComponentWrapperProps {
     trackId: string;
     dataId: string;
     placeholderId: string;
-    position: string,
+    position: string;
     setData: (data: Datum[]) => void;
-    setRange: (range: [{ chromosome: string, position: number }, {
-        chromosome: string,
-        position: number
-    }]) => void;
-    setMetaDimensions: (shape: { x: number, y: number, width: number, height: number }) => void;
+    setRange: (
+        range: [
+            { chromosome: string; position: number },
+            {
+                chromosome: string;
+                position: number;
+            }
+        ]
+    ) => void;
+    setMetaDimensions: (shape: { x: number; y: number; width: number; height: number }) => void;
 }
-
 
 /**
  * Wrapper for gosling component
@@ -38,7 +42,7 @@ export default function GoslingComponentWrapper(props: GoslingComponentWrapperPr
         if ((type === "table" || type === "summary") && position !== ":0-0") {
             gosRef.current.api.zoomTo(trackId, position, 5000)
         }
-    }, [position])
+    }, [trackId, position]);
     useEffect(() => {
         if (gosRef.current == null) return;
         gosRef.current.api.subscribe("onNewTrack", (type, eventData) => {
@@ -52,14 +56,13 @@ export default function GoslingComponentWrapper(props: GoslingComponentWrapperPr
                 if (dataId === eventData.id) {
                     setData(eventData.data);
                 }
-            })
+            });
             gosRef.current.api.subscribe('location', (type, eventData) => {
                 debouncedUpdateRange(eventData)
             });
             return () => {
                 gosRef.current?.api.unsubscribe('location');
                 gosRef.current?.api.unsubscribe('rawData');
-
             };
         }
     }, []);
