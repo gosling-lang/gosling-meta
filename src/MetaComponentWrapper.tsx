@@ -4,7 +4,7 @@ import type { Datum } from 'gosling.js/dist/src/gosling-schema';
 import MetaTable from './MetaTable';
 import PhyloTree from './PhyloTree';
 import { MetaSpec } from './GoslingMetaComponent';
-import ColumnSummarizer from "./ColumnSummarizer";
+import ColumnSummarizer from './ColumnSummarizer';
 
 interface MetaComponentWrapperProps {
     metaSpec: MetaSpec;
@@ -69,12 +69,20 @@ export default function MetaComponentWrapper(props: MetaComponentWrapperProps) {
                 />
             );
             break;
-        case "summary":
-            metaView =
-                <ColumnSummarizer range={range} data={data} genomicColumns={metaSpec.genomicColumns} width={width}
-                                  height={height} dataTransform={metaSpec.dataTransform}
-                                  targetColumn={metaSpec.targetColumn} vegaLiteSpec={metaSpec.vegaLiteSpec}
-                                  plotType={metaSpec.plotType}/>
+        case 'summary':
+            metaView = (
+                <ColumnSummarizer
+                    range={range}
+                    data={data}
+                    genomicColumns={metaSpec.genomicColumns}
+                    width={width}
+                    height={height}
+                    dataTransform={metaSpec.dataTransform}
+                    targetColumn={metaSpec.targetColumn}
+                    vegaLiteSpec={metaSpec.vegaLiteSpec}
+                    plotType={metaSpec.plotType}
+                />
+            );
     }
     return <div style={{ marginTop: 46 }}>{metaView}</div>;
 }

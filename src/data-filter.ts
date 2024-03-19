@@ -1,6 +1,6 @@
-import {Datum} from "gosling.js/dist/src/gosling-schema";
+import { Datum } from 'gosling.js/dist/src/gosling-schema';
 
-export const rangeFilter = function (data,genomicColumns,range) {
+export const rangeFilter = function (data, genomicColumns, range) {
     let inRange: Datum[];
     // features have start and end
     if (genomicColumns.length === 2) {
@@ -22,4 +22,4 @@ export const rangeFilter = function (data,genomicColumns,range) {
         (v, i, a) => a.findIndex(v2 => JSON.stringify(v2) === JSON.stringify(v)) === i
     );
     return uniqueInRange;
-}
+};

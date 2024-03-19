@@ -1,8 +1,8 @@
 import React, { useCallback, useMemo } from 'react';
-import {transformData} from "./table-data-transform";
+import { transformData } from './table-data-transform';
 import type { DataDeep, Datum } from 'gosling.js/dist/src/gosling-schema';
 import TanStackTable from './TanStackTable';
-import {rangeFilter} from "./data-filter";
+import { rangeFilter } from './data-filter';
 
 export type MetaTableSpec = {
     type: 'table';
@@ -15,7 +15,7 @@ export type MetaTableSpec = {
     dataId: string;
 };
 
-interface MetaTableProps extends Omit<MetaTableSpec, 'type' | 'data' | 'dataId' | 'chromosomeField'> {
+interface MetaTableProps extends Omit<MetaTableSpec, 'type' | 'data' | 'dataId'> {
     data: Datum[];
     range: [
         { chromosome: string; position: number },
@@ -37,10 +37,7 @@ interface MetaTableProps extends Omit<MetaTableSpec, 'type' | 'data' | 'dataId' 
     ) => void;
 }
 
-export type tableDataTransform =
-    | MergeColumnsTransform
-    | RenameColumnsTransform
-    | DeriveColumnTransform;
+export type tableDataTransform = MergeColumnsTransform | RenameColumnsTransform | DeriveColumnTransform;
 
 export interface MergeColumnsTransform {
     type: 'merge';
@@ -56,10 +53,10 @@ export interface RenameColumnsTransform {
 }
 
 export interface DeriveColumnTransform {
-    type: 'derive',
-    operator: 'subtract' | 'add' | 'multiply' | 'divide',
-    fields: [string, string],
-    newField: string
+    type: 'derive';
+    operator: 'subtract' | 'add' | 'multiply' | 'divide';
+    fields: [string, string];
+    newField: string;
 }
 
 /**
@@ -80,20 +77,23 @@ export default function MetaTable(props: MetaTableProps) {
         height,
         setZoomTo
     } = props;
-    const transformTableData = useCallback((data) => {
-        if (dataTransform) {
-            let dataTransformed: Datum[] = Array.from(data);
-            dataTransform.forEach(transform => {
-                dataTransformed = transformData(transform, data);
-            })
-            return (dataTransformed);
-        } else return data;
-    }, [dataTransform]);
+    const transformTableData = useCallback(
+        data => {
+            if (dataTransform) {
+                let dataTransformed: Datum[] = Array.from(data);
+                dataTransform.forEach(transform => {
+                    dataTransformed = transformData(transform, data);
+                });
+                return dataTransformed;
+            } else return data;
+        },
+        [dataTransform]
+    );
     const dataInRange = useMemo(() => {
         switch (linkageType) {
-            case "window":
+            case 'window':
                 return transformTableData(rangeFilter(data, genomicColumns, range));
-            case "jump":
+            case 'jump':
                 return transformTableData(data);
         }
     }, [genomicColumns, data, range]);

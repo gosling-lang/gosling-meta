@@ -1,7 +1,7 @@
-import {VegaLite} from "react-vega";
-import React from "react";
-import {Datum} from "gosling.js/dist/src/gosling-schema";
-import {d} from "vitest/dist/types-dea83b3d";
+import { VegaLite } from 'react-vega';
+import React from 'react';
+import { Datum } from 'gosling.js/dist/src/gosling-schema';
+import { TopLevelSpec } from 'vega-lite';
 
 interface VegaLiteBarchartProps {
     data: Datum[];
@@ -12,43 +12,42 @@ interface VegaLiteBarchartProps {
 }
 
 export function VegaLiteBarchart(props: VegaLiteBarchartProps) {
-    const {data, field, sort, width, height} = props;
-    const schema = {
-        "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
-        "data": {"values": data},
-        "mark": "bar",
-        "width": width,
-        "height": height,
-        "autosize": {
-            "type": "fit",
-            "contains": "padding"
+    const { data, field, sort, width, height } = props;
+    const spec: TopLevelSpec = {
+        $schema: 'https://vega.github.io/schema/vega-lite/v5.json',
+        data: { values: data },
+        mark: 'bar',
+        width: width,
+        height: height,
+        autosize: {
+            type: 'fit',
+            contains: 'padding'
         },
-        "transform": [
+        transform: [
             {
-                "filter": {"not": {"field": field, "equal": ""}}
+                filter: { not: { field: field, equal: '' } }
             },
             {
-                "aggregate": [{"op": "count", "field": field, "as": "count"}],
-                "groupby": [field]
+                aggregate: [{ op: 'count', field: field, as: 'count' }],
+                groupby: [field]
             },
             {
-                "impute": "count",
-                "key": field,
-                "keyvals": sort,
-                "value": 0,
-            },
-
+                impute: 'count',
+                key: field,
+                keyvals: sort,
+                value: 0
+            }
         ],
-        "encoding": {
-            "x": {
-                "field": field,
-                "sort": sort
+        encoding: {
+            x: {
+                field: field,
+                sort: sort
             },
-            "y": {
-                "field": "count",
-                "type": "quantitative"
+            y: {
+                field: 'count',
+                type: 'quantitative'
             }
         }
-    }
-    return <VegaLite spec={schema}/>
+    };
+    return <VegaLite spec={spec} />;
 }

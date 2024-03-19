@@ -7,9 +7,9 @@ import { PhyloTreeSpec } from './PhyloTree';
 import GoslingComponentWrapper from './GoslingComponentWrapper';
 import type { Datum } from 'gosling.js/dist/src/gosling-schema';
 import MetaComponentWrapper from './MetaComponentWrapper';
-import {ColumnSummarizerSpec} from "./ColumnSummarizer";
+import { ColumnSummarizerSpec } from './ColumnSummarizer';
 
-export type MetaSpec = (MetaTableSpec | PhyloTreeSpec | ColumnSummarizerSpec)
+export type MetaSpec = MetaTableSpec | PhyloTreeSpec | ColumnSummarizerSpec;
 
 interface ConnectionType {
     type: 'weak' | 'strong';
@@ -66,7 +66,7 @@ export default function GoslingMetaComponent(props: GoslingMetaComponentProps) {
                     type={metaSpec.type}
                     spec={goslingSpecUpdateable}
                     trackId={connectionType.trackId}
-                    dataId={metaSpec.type === 'table'|| metaSpec.type === "summary" ? metaSpec.dataId : ''}
+                    dataId={metaSpec.type === 'table' || metaSpec.type === 'summary' ? metaSpec.dataId : ''}
                     placeholderId={connectionType.placeholderId}
                     position={`${zoomTo[0].chromosome}:${zoomTo[0].position}-${zoomTo[1].position}`}
                     setMetaDimensions={setMetaDimensions}
