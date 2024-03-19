@@ -247,8 +247,7 @@ const metaSpec = {
     ],
     targetColumn: 'Gene length',
     genomicColumns: ['Gene start', 'Gene end'],
-    plotType: 'hist',
-    dataId: detailID
+    plotType: 'hist'
 };
 
 export default function IslandViewerHist() {
@@ -256,7 +255,7 @@ export default function IslandViewerHist() {
         <GoslingMetaComponent
             goslingSpec={goslingSpec}
             metaSpec={metaSpec}
-            connectionType={{ type: 'weak', trackId: detailID, placeholderId: 'table' }}
+            connectionType={{ type: 'weak', dataId: detailID, rangeId: detailID, placeholderId: 'table' }}
         />
     );
 }

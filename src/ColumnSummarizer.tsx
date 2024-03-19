@@ -16,10 +16,10 @@ export type ColumnSummarizerSpec = {
     genomicColumns: [string] | [string, string];
     plotType: 'hist' | 'boxplot' | 'bar' | 'own';
     vegaLiteSpec?: TopLevelSpec;
-    dataId: string;
+    rangeId: string;
 };
 
-interface ColumnSummarizerProps extends Omit<ColumnSummarizerSpec, 'type' | 'dataId'> {
+interface ColumnSummarizerProps extends Omit<ColumnSummarizerSpec, 'type' | 'rangeId'> {
     data: Datum[];
     range: [
         { chromosome: string; position: number },
@@ -45,7 +45,6 @@ export default function ColumnSummarizer(props: ColumnSummarizerProps) {
     }, [dataTransform, data, genomicColumns, range]);
     const dataValues = useMemo(() => {
         if (plotType === 'bar') {
-            console.log(data);
             return [...new Set(data.map(d => String(d[targetColumn])))].sort().filter(d => d != '');
         } else return [];
     }, [data, targetColumn]);

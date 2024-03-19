@@ -11,7 +11,7 @@ const islandData = {
     x: { field: 'Island start', type: 'genomic' },
     xe: { field: 'Island end', type: 'genomic' }
 };
-const detailID = 'detailedView';
+const rangeID = 'detailedView';
 const dataID = 'dataTrack';
 
 const circularRadius = 200;
@@ -142,7 +142,7 @@ const goslingSpec = {
                                 chromosomeField: 'Accession',
                                 genomicFields: ['Gene start', 'Gene end']
                             },
-                            id: detailID,
+                            id: rangeID,
                             x: { field: 'Gene start', type: 'genomic' },
                             xe: { field: 'Gene end', type: 'genomic' },
                             y: { value: 5.5 * linearSize },
@@ -242,8 +242,7 @@ const metaSpec = {
     type: 'summary',
     genomicColumns: ['Island start', 'Island end'],
     targetColumn: 'Method',
-    plotType: 'bar',
-    dataId: dataID
+    plotType: 'bar'
 };
 
 export default function IslandViewerBar() {
@@ -251,7 +250,7 @@ export default function IslandViewerBar() {
         <GoslingMetaComponent
             goslingSpec={goslingSpec}
             metaSpec={metaSpec}
-            connectionType={{ type: 'weak', trackId: detailID, placeholderId: 'table' }}
+            connectionType={{ type: 'weak', dataId: dataID, rangeId: rangeID, placeholderId: 'table' }}
         />
     );
 }

@@ -14,13 +14,13 @@ interface PhyloTreeProps {
     dataUrl: string;
     gosSpec: GoslingSpec;
     setGoslingSpec: (object) => void;
-    linkedTrackId: string;
+    dataId: string;
     width: number;
     height: number;
 }
 
 export default function PhyloTree(props: PhyloTreeProps) {
-    const { dataUrl, gosSpec, setGoslingSpec, linkedTrackId, width, height } = props;
+    const { dataUrl, gosSpec, setGoslingSpec, dataId, width, height } = props;
     const [maxDist, setMaxDist] = useState(1);
     const [trackOrder, setTrackOrder] = useState<string[]>([]);
     const [containerWidth, setContainerWidth] = useState(width);
@@ -57,14 +57,14 @@ export default function PhyloTree(props: PhyloTreeProps) {
             traverseTracks(
                 spec,
                 (viewSpec: GoslingSpec | View | PartialTrack, i: number, parentTracks: Partial<Track>[]) => {
-                    if (viewSpec.id === linkedTrackId) {
+                    if (viewSpec.id === dataId) {
                         parentTracks[i] = { ...viewSpec, row: { ...viewSpec.row, domain: trackOrder } };
                         setGoslingSpec(spec);
                     }
                 }
             );
         }
-    }, [trackOrder, gosSpec, linkedTrackId]);
+    }, [trackOrder, gosSpec, dataId]);
     const vegaSpec: Spec = useMemo(() => {
         return {
             $schema: 'https://vega.github.io/schema/vega/v5.json',

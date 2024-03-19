@@ -10,7 +10,7 @@ interface MetaComponentWrapperProps {
     metaSpec: MetaSpec;
     goslingSpec: GoslingSpec;
     setGoslingSpec: (object) => void;
-    linkedTrackId: string;
+    dataId: string;
     data: Datum[];
     range: [
         { chromosome: string; position: number },
@@ -38,7 +38,7 @@ interface MetaComponentWrapperProps {
  * @returns
  */
 export default function MetaComponentWrapper(props: MetaComponentWrapperProps) {
-    const { metaSpec, goslingSpec, setGoslingSpec, linkedTrackId, data, range, height, width, setZoomTo } = props;
+    const { metaSpec, goslingSpec, setGoslingSpec, dataId, data, range, height, width, setZoomTo } = props;
     let metaView: React.ReactElement | null = null;
     switch (metaSpec.type) {
         case 'table':
@@ -63,7 +63,7 @@ export default function MetaComponentWrapper(props: MetaComponentWrapperProps) {
                     dataUrl={metaSpec.data.url}
                     gosSpec={goslingSpec}
                     setGoslingSpec={setGoslingSpec}
-                    linkedTrackId={linkedTrackId}
+                    dataId={dataId}
                     width={width}
                     height={height}
                 />

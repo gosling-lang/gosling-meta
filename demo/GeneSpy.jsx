@@ -74,7 +74,7 @@ export default function GeneSpy() {
         <GoslingMetaComponent
             goslingSpec={goslingSpec}
             metaSpec={metaSpec}
-            connectionType={{ type: 'strong', trackId: gosId, placeholderId: 'tree' }}
+            connectionType={{ type: 'strong', dataId: gosId, rangeId: gosId, placeholderId: 'tree' }}
         />
     );
 }

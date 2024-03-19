@@ -6,8 +6,8 @@ import { debounce } from 'vega';
 interface GoslingComponentWrapperProps {
     type: 'table' | 'tree' | 'summary';
     spec: GoslingSpec;
-    trackId: string;
     dataId: string;
+    rangeId: string;
     placeholderId: string;
     position: string;
     setData: (data: Datum[]) => void;
@@ -29,23 +29,23 @@ interface GoslingComponentWrapperProps {
  * @returns
  */
 export default function GoslingComponentWrapper(props: GoslingComponentWrapperProps) {
-    const { type, spec, trackId, dataId, placeholderId, position, setData, setRange, setMetaDimensions } = props;
+    const { type, spec, dataId, rangeId, placeholderId, position, setData, setRange, setMetaDimensions } = props;
     const gosRef = useRef<GoslingRef>(null);
     const updateRange = useCallback(
         eventData => {
-            if (eventData.id === trackId) {
+            if (eventData.id === rangeId) {
                 setRange(eventData.genomicRange);
             }
         },
-        [trackId]
+        [rangeId]
     );
     const debouncedUpdateRange = debounce(30, updateRange);
     useEffect(() => {
         if (gosRef.current == null) return;
-        if ((type === 'table' || type === 'summary') && position !== ':0-0') {
-            gosRef.current.api.zoomTo(trackId, position, 5000);
+        if (position !== ':0-0') {
+            gosRef.current.api.zoomTo(rangeId, position, 5000);
         }
-    }, [trackId, position]);
+    }, [rangeId, position]);
     useEffect(() => {
         if (gosRef.current == null) return;
         gosRef.current.api.subscribe('onNewTrack', (type, eventData) => {

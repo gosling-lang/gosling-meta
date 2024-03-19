@@ -13,7 +13,8 @@ export type MetaSpec = MetaTableSpec | PhyloTreeSpec | ColumnSummarizerSpec;
 
 interface ConnectionType {
     type: 'weak' | 'strong';
-    trackId: string;
+    dataId: string;
+    rangeId: string;
     placeholderId: string;
 }
 
@@ -65,8 +66,8 @@ export default function GoslingMetaComponent(props: GoslingMetaComponentProps) {
                 <GoslingComponentWrapper
                     type={metaSpec.type}
                     spec={goslingSpecUpdateable}
-                    trackId={connectionType.trackId}
-                    dataId={metaSpec.type === 'table' || metaSpec.type === 'summary' ? metaSpec.dataId : ''}
+                    dataId={connectionType.dataId}
+                    rangeId={connectionType.rangeId}
                     placeholderId={connectionType.placeholderId}
                     position={`${zoomTo[0].chromosome}:${zoomTo[0].position}-${zoomTo[1].position}`}
                     setMetaDimensions={setMetaDimensions}
@@ -79,7 +80,7 @@ export default function GoslingMetaComponent(props: GoslingMetaComponentProps) {
                     metaSpec={metaSpec}
                     goslingSpec={goslingSpec}
                     setGoslingSpec={setGoslingSpec}
-                    linkedTrackId={connectionType.trackId}
+                    dataId={connectionType.dataId}
                     data={data}
                     range={range}
                     height={metaDimensions.height}

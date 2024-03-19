@@ -12,10 +12,10 @@ export type MetaTableSpec = {
     chromosomeField: string;
     metadataColumns: { type: 'genomic' | 'nominal' | 'quantitative'; columnName: string; columnFormat: string }[];
     linkageType: 'jump' | 'window'; // jump: Click button in the table to jump to a gene in the visualization, window: The table shows only the selected range in the visualization
-    dataId: string;
+    rangeId?: string;
 };
 
-interface MetaTableProps extends Omit<MetaTableSpec, 'type' | 'data' | 'dataId'> {
+interface MetaTableProps extends Omit<MetaTableSpec, 'type' | 'data' | 'rangeId'> {
     data: Datum[];
     range: [
         { chromosome: string; position: number },

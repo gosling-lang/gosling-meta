@@ -266,8 +266,7 @@ const metaSpec = {
                 aggregate: 'count'
             }
         }
-    },
-    dataId: detailID
+    }
 };
 
 export default function IslandViewerVega() {
@@ -275,7 +274,7 @@ export default function IslandViewerVega() {
         <GoslingMetaComponent
             goslingSpec={goslingSpec}
             metaSpec={metaSpec}
-            connectionType={{ type: 'weak', trackId: detailID, placeholderId: 'table' }}
+            connectionType={{ type: 'weak', dataId: detailID, rangeId: detailID, placeholderId: 'table' }}
         />
     );
 }

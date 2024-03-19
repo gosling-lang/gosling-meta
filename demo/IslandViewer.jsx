@@ -12,7 +12,7 @@ const islandData = {
     xe: { field: 'Island end', type: 'genomic' }
 };
 const dataID = 'dataView';
-const detailID = 'detailedView';
+const rangeID = 'detailedView';
 const circularRadius = 200;
 const centerRadius = 0.5;
 
@@ -161,7 +161,7 @@ const goslingSpec = {
                                 chromosomeField: 'Accession',
                                 genomicFields: ['Gene start', 'Gene end']
                             },
-                            id: detailID,
+                            id: rangeID,
                             x: { field: 'Gene start', type: 'genomic' },
                             xe: { field: 'Gene end', type: 'genomic' },
                             y: { value: 5.5 * linearSize },
@@ -277,8 +277,8 @@ const metaSpec = {
         { type: 'nominal', columnName: 'Accnum' },
         { type: 'nominal', columnName: 'Product' }
     ],
-    linkageType: 'jump',
-    dataId: dataID
+    linkageType: 'window',
+    rangeId: rangeID
 };
 
 export default function IslandViewer() {
@@ -286,7 +286,7 @@ export default function IslandViewer() {
         <GoslingMetaComponent
             goslingSpec={goslingSpec}
             metaSpec={metaSpec}
-            connectionType={{ type: 'weak', trackId: detailID, placeholderId: 'table' }}
+            connectionType={{ type: 'weak', dataId: rangeID, rangeId: rangeID, placeholderId: 'table' }}
         />
     );
 }
