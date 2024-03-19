@@ -267,8 +267,6 @@ const metaSpec = {
             newField: 'Prediction Method'
         }
     ],
-    genomicColumns: ['Gene start', 'Gene end'],
-    chromosomeField: 'Accession',
     metadataColumns: [
         { type: 'genomic', columnName: 'Gene start' },
         { type: 'genomic', columnName: 'Gene end' },

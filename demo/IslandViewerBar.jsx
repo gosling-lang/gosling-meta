@@ -240,7 +240,6 @@ const goslingSpec = {
 };
 const metaSpec = {
     type: 'summary',
-    genomicColumns: ['Island start', 'Island end'],
     targetColumn: 'Method',
     plotType: 'bar'
 };

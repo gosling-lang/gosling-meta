@@ -12,6 +12,7 @@ const islandData = {
     xe: { field: 'Island end', type: 'genomic' }
 };
 const detailID = 'detailedView';
+const dataId = 'dataId';
 const circularRadius = 200;
 const centerRadius = 0.5;
 
@@ -93,6 +94,7 @@ const goslingSpec = {
                         },
                         {
                             ...islandData,
+                            id: dataId,
                             row: {
                                 field: 'Method',
                                 domain: [
@@ -237,34 +239,35 @@ const goslingSpec = {
 };
 const metaSpec = {
     type: 'summary',
-    dataTransform: [
-        {
-            type: 'derive',
-            operator: 'subtract',
-            fields: ['Gene end', 'Gene start'],
-            newField: 'Gene length'
-        }
-    ],
-    targetColumn: 'Gene length',
-    genomicColumns: ['Gene start', 'Gene end'],
+    targetColumn: 'Method',
     plotType: 'own',
     vegaLiteSpec: {
         $schema: 'https://vega.github.io/schema/vega-lite/v5.json',
-        mark: 'bar',
+        mark: 'arc',
         width: 600,
         height: linearHeight + circularRadius * 2 + 30,
         autosize: {
             type: 'fit',
             contains: 'padding'
         },
-        encoding: {
-            x: {
-                bin: true,
-                field: 'Gene length'
+        transform: [
+            {
+                filter: { not: { field: 'Method', equal: '' } }
             },
-            y: {
-                aggregate: 'count'
+            {
+                aggregate: [{ op: 'count', field: 'Method', as: 'count' }],
+                groupby: ['Method']
+            },
+            {
+                impute: 'count',
+                key: 'Method',
+                keyvals: ['IslandPath-DIMOB', 'IslandPick', 'Islander', 'Predicted by at least one method', 'SIGI-HMM'],
+                value: 0
             }
+        ],
+        encoding: {
+            theta: { field: 'count', type: 'quantitative' },
+            color: { field: 'Method', type: 'nominal' }
         }
     }
 };
@@ -274,7 +277,7 @@ export default function IslandViewerVega() {
         <GoslingMetaComponent
             goslingSpec={goslingSpec}
             metaSpec={metaSpec}
-            connectionType={{ type: 'weak', dataId: detailID, rangeId: detailID, placeholderId: 'table' }}
+            connectionType={{ type: 'weak', dataId: dataId, rangeId: detailID, placeholderId: 'table' }}
         />
     );
 }

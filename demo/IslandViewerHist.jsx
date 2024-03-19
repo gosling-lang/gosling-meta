@@ -246,7 +246,6 @@ const metaSpec = {
         }
     ],
     targetColumn: 'Gene length',
-    genomicColumns: ['Gene start', 'Gene end'],
     plotType: 'hist'
 };
 

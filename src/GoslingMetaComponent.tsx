@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { type GoslingSpec } from 'gosling.js';
 import { MetaTableSpec } from './MetaTable';
 import 'higlass/dist/hglib.css';
@@ -6,6 +6,7 @@ import './index.css';
 import { PhyloTreeSpec } from './PhyloTree';
 import GoslingComponentWrapper from './GoslingComponentWrapper';
 import type { Datum } from 'gosling.js/dist/src/gosling-schema';
+import { PartialTrack, Track, View } from 'gosling.js/dist/src/gosling-schema';
 import MetaComponentWrapper from './MetaComponentWrapper';
 import { ColumnSummarizerSpec } from './ColumnSummarizer';
 
@@ -58,6 +59,31 @@ export default function GoslingMetaComponent(props: GoslingMetaComponentProps) {
         { chromosome: '', position: 0 },
         { chromosome: '', position: 0 }
     ]);
+    const [genomicFields, setGenomicFields] = useState();
+    const [chromosomeField, setChromosomeField] = useState();
+    const traverseTracks = useCallback(
+        (spec: GoslingSpec | View | PartialTrack, callback: (t: Partial<Track>) => void) => {
+            if ('tracks' in spec) {
+                spec.tracks.forEach(t => {
+                    callback(t);
+                    traverseTracks(t, callback);
+                });
+            } else if ('views' in spec) {
+                spec.views.forEach(t => {
+                    traverseTracks(t, callback);
+                });
+            }
+        },
+        []
+    );
+    useEffect(() => {
+        traverseTracks(goslingSpec, (viewSpec: GoslingSpec | View | PartialTrack) => {
+            if (viewSpec.id === connectionType.dataId) {
+                setChromosomeField(viewSpec.data.chromosomeField);
+                setGenomicFields(viewSpec.data.genomicFields);
+            }
+        });
+    }, [goslingSpec, connectionType]);
     // data relevant for the meta visualization
     const [data, setData] = useState<Datum[]>([]);
     return (
@@ -75,19 +101,23 @@ export default function GoslingMetaComponent(props: GoslingMetaComponentProps) {
                     setRange={setRange}
                 />
             </div>
-            <div id="metavis-component-wrapper">
-                <MetaComponentWrapper
-                    metaSpec={metaSpec}
-                    goslingSpec={goslingSpec}
-                    setGoslingSpec={setGoslingSpec}
-                    dataId={connectionType.dataId}
-                    data={data}
-                    range={range}
-                    height={metaDimensions.height}
-                    width={metaDimensions.width}
-                    setZoomTo={setZoomTo}
-                />
-            </div>
+            {chromosomeField && genomicFields ? (
+                <div id="metavis-component-wrapper">
+                    <MetaComponentWrapper
+                        metaSpec={metaSpec}
+                        goslingSpec={goslingSpec}
+                        genomicColumns={genomicFields}
+                        chromosomeField={chromosomeField}
+                        setGoslingSpec={setGoslingSpec}
+                        dataId={connectionType.dataId}
+                        data={data}
+                        range={range}
+                        height={metaDimensions.height}
+                        width={metaDimensions.width}
+                        setZoomTo={setZoomTo}
+                    />
+                </div>
+            ) : null}
         </div>
     );
 }

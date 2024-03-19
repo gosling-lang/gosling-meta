@@ -9,6 +9,8 @@ import ColumnSummarizer from './ColumnSummarizer';
 interface MetaComponentWrapperProps {
     metaSpec: MetaSpec;
     goslingSpec: GoslingSpec;
+    chromosomeField: string;
+    genomicColumns: [string] | [string, string];
     setGoslingSpec: (object) => void;
     dataId: string;
     data: Datum[];
@@ -38,7 +40,19 @@ interface MetaComponentWrapperProps {
  * @returns
  */
 export default function MetaComponentWrapper(props: MetaComponentWrapperProps) {
-    const { metaSpec, goslingSpec, setGoslingSpec, dataId, data, range, height, width, setZoomTo } = props;
+    const {
+        metaSpec,
+        goslingSpec,
+        chromosomeField,
+        genomicColumns,
+        setGoslingSpec,
+        dataId,
+        data,
+        range,
+        height,
+        width,
+        setZoomTo
+    } = props;
     let metaView: React.ReactElement | null = null;
     switch (metaSpec.type) {
         case 'table':
@@ -47,8 +61,8 @@ export default function MetaComponentWrapper(props: MetaComponentWrapperProps) {
                     dataTransform={metaSpec.dataTransform}
                     range={range}
                     data={data}
-                    genomicColumns={metaSpec.genomicColumns}
-                    chromosomeField={metaSpec.chromosomeField}
+                    genomicColumns={genomicColumns}
+                    chromosomeField={chromosomeField}
                     metadataColumns={metaSpec.metadataColumns}
                     width={width}
                     height={height}
@@ -74,7 +88,7 @@ export default function MetaComponentWrapper(props: MetaComponentWrapperProps) {
                 <ColumnSummarizer
                     range={range}
                     data={data}
-                    genomicColumns={metaSpec.genomicColumns}
+                    genomicColumns={genomicColumns}
                     width={width}
                     height={height}
                     dataTransform={metaSpec.dataTransform}
