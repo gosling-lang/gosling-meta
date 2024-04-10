@@ -275,7 +275,7 @@ const metaSpec = {
         { type: 'nominal', columnName: 'Accnum' },
         { type: 'nominal', columnName: 'Product' }
     ],
-    linkageType: 'window',
+    linkageType: 'jump',
     rangeId: rangeID
 };
 
@@ -284,7 +284,7 @@ export default function IslandViewer() {
         <GoslingMetaComponent
             goslingSpec={goslingSpec}
             metaSpec={metaSpec}
-            connectionType={{ type: 'weak', dataId: rangeID, rangeId: rangeID, placeholderId: 'table' }}
+            connectionType={{ type: 'weak', dataId: dataID, rangeId: rangeID, placeholderId: 'table' }}
         />
     );
 }

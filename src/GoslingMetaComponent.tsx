@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { type GoslingSpec } from 'gosling.js';
 import { MetaTableSpec } from './MetaTable';
+import SpecDisplay from './SpecDisplay';
 import 'higlass/dist/hglib.css';
 import './index.css';
 import { PhyloTreeSpec } from './PhyloTree';
@@ -12,7 +13,7 @@ import { ColumnSummarizerSpec } from './ColumnSummarizer';
 
 export type MetaSpec = MetaTableSpec | PhyloTreeSpec | ColumnSummarizerSpec;
 
-interface ConnectionType {
+export interface ConnectionType {
     type: 'weak' | 'strong';
     dataId: string;
     rangeId: string;
@@ -70,6 +71,7 @@ export default function GoslingMetaComponent(props: GoslingMetaComponentProps) {
                 });
             } else if ('views' in spec) {
                 spec.views.forEach(t => {
+                    callback(t);
                     traverseTracks(t, callback);
                 });
             }
@@ -84,40 +86,44 @@ export default function GoslingMetaComponent(props: GoslingMetaComponentProps) {
             }
         });
     }, [goslingSpec, connectionType]);
+
     // data relevant for the meta visualization
     const [data, setData] = useState<Datum[]>([]);
     return (
         <div>
-            <div id="gosling-component-wrapper">
-                <GoslingComponentWrapper
-                    type={metaSpec.type}
-                    spec={goslingSpecUpdateable}
-                    dataId={connectionType.dataId}
-                    rangeId={connectionType.rangeId}
-                    placeholderId={connectionType.placeholderId}
-                    position={`${zoomTo[0].chromosome}:${zoomTo[0].position}-${zoomTo[1].position}`}
-                    setMetaDimensions={setMetaDimensions}
-                    setData={setData}
-                    setRange={setRange}
-                />
-            </div>
-            {chromosomeField && genomicFields ? (
-                <div id="metavis-component-wrapper">
-                    <MetaComponentWrapper
-                        metaSpec={metaSpec}
-                        goslingSpec={goslingSpec}
-                        genomicColumns={genomicFields}
-                        chromosomeField={chromosomeField}
-                        setGoslingSpec={setGoslingSpec}
+            <div style={{ display: 'inline-block' }}>
+                <div id="gosling-component-wrapper">
+                    <GoslingComponentWrapper
+                        type={metaSpec.type}
+                        spec={goslingSpecUpdateable}
                         dataId={connectionType.dataId}
-                        data={data}
-                        range={range}
-                        height={metaDimensions.height}
-                        width={metaDimensions.width}
-                        setZoomTo={setZoomTo}
+                        rangeId={connectionType.rangeId}
+                        placeholderId={connectionType.placeholderId}
+                        position={`${zoomTo[0].chromosome}:${zoomTo[0].position}-${zoomTo[1].position}`}
+                        setMetaDimensions={setMetaDimensions}
+                        setData={setData}
+                        setRange={setRange}
                     />
                 </div>
-            ) : null}
+                {genomicFields ? (
+                    <div id="metavis-component-wrapper">
+                        <MetaComponentWrapper
+                            metaSpec={metaSpec}
+                            goslingSpec={goslingSpec}
+                            genomicColumns={genomicFields}
+                            chromosomeField={chromosomeField ? chromosomeField : ''}
+                            setGoslingSpec={setGoslingSpec}
+                            dataId={connectionType.dataId}
+                            data={data}
+                            range={range}
+                            height={metaDimensions.height}
+                            width={metaDimensions.width}
+                            setZoomTo={setZoomTo}
+                        />
+                    </div>
+                ) : null}
+            </div>
+            <SpecDisplay connectionType={connectionType} metaSpec={metaSpec} goslingSpec={goslingSpec} />
         </div>
     );
 }

@@ -66,6 +66,7 @@ export default function GoslingComponentWrapper(props: GoslingComponentWrapperPr
             return () => {
                 gosRef.current?.api.unsubscribe('location');
                 gosRef.current?.api.unsubscribe('rawData');
+                gosRef.current?.api.unsubscribe('onNewTrack');
             };
         }
     }, []);
