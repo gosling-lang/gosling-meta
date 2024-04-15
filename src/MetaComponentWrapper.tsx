@@ -3,16 +3,15 @@ import { GoslingSpec } from 'gosling.js';
 import type { Datum } from 'gosling.js/dist/src/gosling-schema';
 import MetaTable from './MetaTable';
 import PhyloTree from './PhyloTree';
-import { MetaSpec } from './GoslingMetaComponent';
 import ColumnSummarizer from './ColumnSummarizer';
+import { MetaView } from './MetaView';
 
 interface MetaComponentWrapperProps {
-    metaSpec: MetaSpec;
+    metaView: MetaView;
     goslingSpec: GoslingSpec;
     chromosomeField: string;
     genomicColumns: [string] | [string, string];
     setGoslingSpec: (object) => void;
-    dataId: string;
     data: Datum[];
     range: [
         { chromosome: string; position: number },
@@ -41,62 +40,65 @@ interface MetaComponentWrapperProps {
  */
 export default function MetaComponentWrapper(props: MetaComponentWrapperProps) {
     const {
-        metaSpec,
+        metaView,
         goslingSpec,
         chromosomeField,
         genomicColumns,
         setGoslingSpec,
-        dataId,
         data,
         range,
         height,
         width,
         setZoomTo
     } = props;
-    let metaView: React.ReactElement | null = null;
-    switch (metaSpec.type) {
+    let view: React.ReactElement | null = null;
+    switch (metaView.type) {
         case 'table':
-            metaView = (
+            view = (
                 <MetaTable
-                    dataTransform={metaSpec.dataTransform}
+                    dataTransform={metaView.dataTransform}
                     range={range}
                     data={data}
                     genomicColumns={genomicColumns}
                     chromosomeField={chromosomeField}
-                    metadataColumns={metaSpec.metadataColumns}
+                    metadataColumns={metaView.metadataColumns}
                     width={width}
                     height={height}
                     setZoomTo={setZoomTo}
-                    linkageType={metaSpec.linkageType}
+                    linkageType={metaView.linkageType}
                 />
             );
             break;
         case 'tree':
-            metaView = (
+            view = (
                 <PhyloTree
-                    dataUrl={metaSpec.data.url}
+                    dataUrl={metaView.data.url}
                     gosSpec={goslingSpec}
                     setGoslingSpec={setGoslingSpec}
-                    dataId={dataId}
+                    dataId={metaView.connectionType.dataId}
                     width={width}
                     height={height}
                 />
             );
             break;
         case 'summary':
-            metaView = (
+            view = (
                 <ColumnSummarizer
                     range={range}
                     data={data}
                     genomicColumns={genomicColumns}
                     width={width}
                     height={height}
-                    dataTransform={metaSpec.dataTransform}
-                    targetColumn={metaSpec.targetColumn}
-                    vegaLiteSpec={metaSpec.vegaLiteSpec}
-                    plotType={metaSpec.plotType}
+                    dataTransform={metaView.dataTransform}
+                    targetColumn={metaView.targetColumn}
+                    vegaLiteSpec={metaView.vegaLiteSpec}
+                    plotType={metaView.plotType}
                 />
             );
     }
-    return <div style={{ marginTop: 46 }}>{metaView}</div>;
+    return (
+        <div id="meta-component-wrapper" style={{ marginTop: 46 }}>
+            {view}
+        </div>
+    );
 }

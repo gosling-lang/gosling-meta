@@ -4,13 +4,9 @@ import type { Datum } from 'gosling.js/dist/src/gosling-schema';
 import { debounce } from 'vega';
 
 interface GoslingComponentWrapperProps {
-    type: 'table' | 'tree' | 'summary';
     spec: GoslingSpec;
-    dataId: string;
-    rangeId: string;
-    placeholderId: string;
     position: string;
-    setData: (data: Datum[]) => void;
+    setData: (data: Datum[], id: string) => void;
     setRange: (
         range: [
             { chromosome: string; position: number },
@@ -18,9 +14,10 @@ interface GoslingComponentWrapperProps {
                 chromosome: string;
                 position: number;
             }
-        ]
+        ],
+        id: string
     ) => void;
-    setMetaDimensions: (shape: { x: number; y: number; width: number; height: number }) => void;
+    setMetaDimensions: (shape: { x: number; y: number; width: number; height: number }, id: string) => void;
 }
 
 /**
@@ -29,16 +26,11 @@ interface GoslingComponentWrapperProps {
  * @returns
  */
 export default function GoslingComponentWrapper(props: GoslingComponentWrapperProps) {
-    const { type, spec, dataId, rangeId, placeholderId, position, setData, setRange, setMetaDimensions } = props;
+    const { spec, position, setData, setRange, setMetaDimensions } = props;
     const gosRef = useRef<GoslingRef>(null);
-    const updateRange = useCallback(
-        eventData => {
-            if (eventData.id === rangeId) {
-                setRange(eventData.genomicRange);
-            }
-        },
-        [rangeId]
-    );
+    const updateRange = useCallback(eventData => {
+        setRange(eventData.genomicRange, eventData.id);
+    }, []);
     const debouncedUpdateRange = debounce(30, updateRange);
     useEffect(() => {
         if (gosRef.current == null) return;
@@ -49,26 +41,20 @@ export default function GoslingComponentWrapper(props: GoslingComponentWrapperPr
     useEffect(() => {
         if (gosRef.current == null) return;
         gosRef.current.api.subscribe('onNewTrack', (type, eventData) => {
-            if (eventData.id === placeholderId) {
-                setMetaDimensions(gosRef.current?.api.getTrack(placeholderId).shape);
-            }
+            setMetaDimensions(gosRef.current?.api.getTrack(eventData).shape, eventData.id);
         });
-        if (type === 'table' || type === 'summary') {
-            // TODO: not desired to have an extra track for the data! Maybe event that always returns full data?
-            gosRef.current.api.subscribe('rawData', (type, eventData) => {
-                if (dataId === eventData.id) {
-                    setData(eventData.data);
-                }
-            });
-            gosRef.current.api.subscribe('location', (type, eventData) => {
-                debouncedUpdateRange(eventData);
-            });
-            return () => {
-                gosRef.current?.api.unsubscribe('location');
-                gosRef.current?.api.unsubscribe('rawData');
-                gosRef.current?.api.unsubscribe('onNewTrack');
-            };
-        }
+        // TODO: not desired to have an extra track for the data! Maybe event that always returns full data?
+        gosRef.current.api.subscribe('rawData', (type, eventData) => {
+            setData(eventData.data, eventData.id);
+        });
+        gosRef.current.api.subscribe('location', (type, eventData) => {
+            debouncedUpdateRange(eventData);
+        });
+        return () => {
+            gosRef.current?.api.unsubscribe('location');
+            gosRef.current?.api.unsubscribe('rawData');
+            gosRef.current?.api.unsubscribe('onNewTrack');
+        };
     }, []);
     return (
         <div>

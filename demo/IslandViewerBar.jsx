@@ -241,15 +241,10 @@ const goslingSpec = {
 const metaSpec = {
     type: 'summary',
     targetColumn: 'Method',
-    plotType: 'bar'
+    plotType: 'bar',
+    connectionType: { type: 'weak', dataId: dataID, rangeId: rangeID, placeholderId: 'table' }
 };
 
 export default function IslandViewerBar() {
-    return (
-        <GoslingMetaComponent
-            goslingSpec={goslingSpec}
-            metaSpec={metaSpec}
-            connectionType={{ type: 'weak', dataId: dataID, rangeId: rangeID, placeholderId: 'table' }}
-        />
-    );
+    return <GoslingMetaComponent goslingSpec={goslingSpec} metaSpec={metaSpec} />;
 }

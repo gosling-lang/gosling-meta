@@ -269,15 +269,10 @@ const metaSpec = {
             theta: { field: 'count', type: 'quantitative' },
             color: { field: 'Method', type: 'nominal' }
         }
-    }
+    },
+    connectionType: { type: 'weak', dataId: dataId, rangeId: detailID, placeholderId: 'table' }
 };
 
 export default function IslandViewerVega() {
-    return (
-        <GoslingMetaComponent
-            goslingSpec={goslingSpec}
-            metaSpec={metaSpec}
-            connectionType={{ type: 'weak', dataId: dataId, rangeId: detailID, placeholderId: 'table' }}
-        />
-    );
+    return <GoslingMetaComponent goslingSpec={goslingSpec} metaSpec={metaSpec} />;
 }

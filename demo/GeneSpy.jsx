@@ -66,15 +66,10 @@ const metaSpec = {
         url: 'https://s3.amazonaws.com/gosling-lang.org/data/GeneSpy/gene_spy_tree.json',
         type: 'json'
     },
-    width: 400
+    width: 400,
+    connectionType: { type: 'strong', dataId: gosId, placeholderId: 'tree' }
 };
 
 export default function GeneSpy() {
-    return (
-        <GoslingMetaComponent
-            goslingSpec={goslingSpec}
-            metaSpec={metaSpec}
-            connectionType={{ type: 'strong', dataId: gosId, rangeId: gosId, placeholderId: 'tree' }}
-        />
-    );
+    return <GoslingMetaComponent goslingSpec={goslingSpec} metaSpec={metaSpec} />;
 }

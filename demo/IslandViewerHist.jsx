@@ -246,15 +246,10 @@ const metaSpec = {
         }
     ],
     targetColumn: 'Gene length',
-    plotType: 'hist'
+    plotType: 'hist',
+    connectionType: { type: 'weak', dataId: detailID, rangeId: detailID, placeholderId: 'table' }
 };
 
 export default function IslandViewerHist() {
-    return (
-        <GoslingMetaComponent
-            goslingSpec={goslingSpec}
-            metaSpec={metaSpec}
-            connectionType={{ type: 'weak', dataId: detailID, rangeId: detailID, placeholderId: 'table' }}
-        />
-    );
+    return <GoslingMetaComponent goslingSpec={goslingSpec} metaSpec={metaSpec} />;
 }
