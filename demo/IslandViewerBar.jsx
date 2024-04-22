@@ -239,10 +239,14 @@ const goslingSpec = {
     ]
 };
 const metaSpec = {
-    type: 'summary',
-    targetColumn: 'Method',
-    plotType: 'bar',
-    connectionType: { type: 'weak', dataId: dataID, rangeId: rangeID, placeholderId: 'table' }
+    views: [
+        {
+            type: 'summary',
+            targetColumn: 'Method',
+            plotType: 'bar',
+            connectionType: { type: 'weak', dataId: dataID, rangeId: rangeID, placeholderId: 'table' }
+        }
+    ]
 };
 
 export default function IslandViewerBar() {

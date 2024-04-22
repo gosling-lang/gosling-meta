@@ -258,25 +258,29 @@ const goslingSpec = {
     ]
 };
 const metaSpec = {
-    type: 'table',
-    dataTransform: [
+    views: [
         {
-            type: 'merge',
-            fields: ['Islands', 'Annotations'],
-            mergeChar: '/',
-            newField: 'Prediction Method'
+            type: 'table',
+            dataTransform: [
+                {
+                    type: 'merge',
+                    fields: ['Islands', 'Annotations'],
+                    mergeChar: '/',
+                    newField: 'Prediction Method'
+                }
+            ],
+            metadataColumns: [
+                { type: 'genomic', columnName: 'Gene start' },
+                { type: 'genomic', columnName: 'Gene end' },
+                { type: 'nominal', columnName: 'Prediction Method' },
+                { type: 'nominal', columnName: 'Gene name' },
+                { type: 'nominal', columnName: 'Accnum' },
+                { type: 'nominal', columnName: 'Product' }
+            ],
+            connectionType: { type: 'weak', dataId: dataID, rangeId: rangeID, placeholderId: 'table' },
+            linkageType: 'jump'
         }
-    ],
-    metadataColumns: [
-        { type: 'genomic', columnName: 'Gene start' },
-        { type: 'genomic', columnName: 'Gene end' },
-        { type: 'nominal', columnName: 'Prediction Method' },
-        { type: 'nominal', columnName: 'Gene name' },
-        { type: 'nominal', columnName: 'Accnum' },
-        { type: 'nominal', columnName: 'Product' }
-    ],
-    connectionType: { type: 'weak', dataId: dataID, rangeId: rangeID, placeholderId: 'table' },
-    linkageType: 'jump'
+    ]
 };
 
 export default function IslandViewer() {

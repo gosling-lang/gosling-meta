@@ -5,7 +5,7 @@ import { debounce } from 'vega';
 
 interface GoslingComponentWrapperProps {
     spec: GoslingSpec;
-    position: string;
+    position: [string, string][];
     setData: (data: Datum[], id: string) => void;
     setRange: (
         range: [
@@ -34,14 +34,16 @@ export default function GoslingComponentWrapper(props: GoslingComponentWrapperPr
     const debouncedUpdateRange = debounce(30, updateRange);
     useEffect(() => {
         if (gosRef.current == null) return;
-        if (position !== ':0-0') {
-            gosRef.current.api.zoomTo(rangeId, position, 5000);
-        }
-    }, [rangeId, position]);
+        position.forEach(([pos, id]) => {
+            if (pos !== ':0-0') {
+                gosRef.current?.api.zoomTo(id, pos, 5000);
+            }
+        });
+    }, [position]);
     useEffect(() => {
         if (gosRef.current == null) return;
         gosRef.current.api.subscribe('onNewTrack', (type, eventData) => {
-            setMetaDimensions(gosRef.current?.api.getTrack(eventData).shape, eventData.id);
+            setMetaDimensions(gosRef.current?.api.getTrack(eventData.id).shape, eventData.id);
         });
         // TODO: not desired to have an extra track for the data! Maybe event that always returns full data?
         gosRef.current.api.subscribe('rawData', (type, eventData) => {

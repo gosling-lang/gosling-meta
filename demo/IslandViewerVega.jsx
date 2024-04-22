@@ -238,39 +238,49 @@ const goslingSpec = {
     ]
 };
 const metaSpec = {
-    type: 'summary',
-    targetColumn: 'Method',
-    plotType: 'own',
-    vegaLiteSpec: {
-        $schema: 'https://vega.github.io/schema/vega-lite/v5.json',
-        mark: 'arc',
-        width: 600,
-        height: linearHeight + circularRadius * 2 + 30,
-        autosize: {
-            type: 'fit',
-            contains: 'padding'
-        },
-        transform: [
-            {
-                filter: { not: { field: 'Method', equal: '' } }
+    views: [
+        {
+            type: 'summary',
+            targetColumn: 'Method',
+            plotType: 'own',
+            vegaLiteSpec: {
+                $schema: 'https://vega.github.io/schema/vega-lite/v5.json',
+                mark: 'arc',
+                width: 600,
+                height: linearHeight + circularRadius * 2 + 30,
+                autosize: {
+                    type: 'fit',
+                    contains: 'padding'
+                },
+                transform: [
+                    {
+                        filter: { not: { field: 'Method', equal: '' } }
+                    },
+                    {
+                        aggregate: [{ op: 'count', field: 'Method', as: 'count' }],
+                        groupby: ['Method']
+                    },
+                    {
+                        impute: 'count',
+                        key: 'Method',
+                        keyvals: [
+                            'IslandPath-DIMOB',
+                            'IslandPick',
+                            'Islander',
+                            'Predicted by at least one method',
+                            'SIGI-HMM'
+                        ],
+                        value: 0
+                    }
+                ],
+                encoding: {
+                    theta: { field: 'count', type: 'quantitative' },
+                    color: { field: 'Method', type: 'nominal' }
+                }
             },
-            {
-                aggregate: [{ op: 'count', field: 'Method', as: 'count' }],
-                groupby: ['Method']
-            },
-            {
-                impute: 'count',
-                key: 'Method',
-                keyvals: ['IslandPath-DIMOB', 'IslandPick', 'Islander', 'Predicted by at least one method', 'SIGI-HMM'],
-                value: 0
-            }
-        ],
-        encoding: {
-            theta: { field: 'count', type: 'quantitative' },
-            color: { field: 'Method', type: 'nominal' }
+            connectionType: { type: 'weak', dataId: dataId, rangeId: detailID, placeholderId: 'table' }
         }
-    },
-    connectionType: { type: 'weak', dataId: dataId, rangeId: detailID, placeholderId: 'table' }
+    ]
 };
 
 export default function IslandViewerVega() {

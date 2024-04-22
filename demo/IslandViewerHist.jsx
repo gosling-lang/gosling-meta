@@ -236,18 +236,22 @@ const goslingSpec = {
     ]
 };
 const metaSpec = {
-    type: 'summary',
-    dataTransform: [
+    views: [
         {
-            type: 'derive',
-            operator: 'subtract',
-            fields: ['Gene end', 'Gene start'],
-            newField: 'Gene length'
+            type: 'summary',
+            dataTransform: [
+                {
+                    type: 'derive',
+                    operator: 'subtract',
+                    fields: ['Gene end', 'Gene start'],
+                    newField: 'Gene length'
+                }
+            ],
+            targetColumn: 'Gene length',
+            plotType: 'hist',
+            connectionType: { type: 'weak', dataId: detailID, rangeId: detailID, placeholderId: 'table' }
         }
-    ],
-    targetColumn: 'Gene length',
-    plotType: 'hist',
-    connectionType: { type: 'weak', dataId: detailID, rangeId: detailID, placeholderId: 'table' }
+    ]
 };
 
 export default function IslandViewerHist() {

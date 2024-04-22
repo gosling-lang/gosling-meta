@@ -1,10 +1,20 @@
 import React from 'react';
 import { GoslingSpec } from 'gosling.js';
 import type { Datum } from 'gosling.js/dist/src/gosling-schema';
-import MetaTable from './MetaTable';
-import PhyloTree from './PhyloTree';
-import ColumnSummarizer from './ColumnSummarizer';
-import { MetaView } from './MetaView';
+import MetaTable, { MetaTableSpec } from './MetaTable';
+import PhyloTree, { PhyloTreeSpec } from './PhyloTree';
+import ColumnSummarizer, { ColumnSummarizerSpec } from './ColumnSummarizer';
+
+export type MetaView = (MetaTableSpec | PhyloTreeSpec | ColumnSummarizerSpec) & {
+    connectionType: ConnectionType;
+};
+
+export interface ConnectionType {
+    type: 'weak' | 'strong';
+    dataId: string;
+    rangeId?: string;
+    placeholderId: string;
+}
 
 interface MetaComponentWrapperProps {
     metaView: MetaView;
@@ -29,7 +39,8 @@ interface MetaComponentWrapperProps {
                 chromosome: string;
                 position: number;
             }
-        ]
+        ],
+        id: string
     ) => void;
 }
 
@@ -64,7 +75,7 @@ export default function MetaComponentWrapper(props: MetaComponentWrapperProps) {
                     metadataColumns={metaView.metadataColumns}
                     width={width}
                     height={height}
-                    setZoomTo={setZoomTo}
+                    setZoomTo={zoomTo => setZoomTo(zoomTo, metaView.connectionType.rangeId)}
                     linkageType={metaView.linkageType}
                 />
             );

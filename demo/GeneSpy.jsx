@@ -61,13 +61,17 @@ const goslingSpec = {
     ]
 };
 const metaSpec = {
-    type: 'tree',
-    data: {
-        url: 'https://s3.amazonaws.com/gosling-lang.org/data/GeneSpy/gene_spy_tree.json',
-        type: 'json'
-    },
-    width: 400,
-    connectionType: { type: 'strong', dataId: gosId, placeholderId: 'tree' }
+    views: [
+        {
+            type: 'tree',
+            data: {
+                url: 'https://s3.amazonaws.com/gosling-lang.org/data/GeneSpy/gene_spy_tree.json',
+                type: 'json'
+            },
+            width: 400,
+            connectionType: { type: 'strong', dataId: gosId, placeholderId: 'tree' }
+        }
+    ]
 };
 
 export default function GeneSpy() {
